@@ -1,0 +1,20 @@
+{
+  "name": "jurassicdle",
+  "version": "1.0.0",
+  "description": "Wordle style game with Dinos!",
+  "license": "ISC",
+  "author": "Abdel Allali",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "npm start"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
