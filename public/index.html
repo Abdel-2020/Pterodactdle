@@ -15,7 +15,7 @@
       <section>
         <h2>Guess today's dinosaur!</h2>
         <p>Type any Dinosaur to begin.</p>
-        <form>
+        <form action="/api/v1/dinos/userguess" method="POST">
           <input type="text" name="" value="Enter dinosaur name" />
           <button type="button">Enter</button>
         </form>
@@ -26,5 +26,8 @@
         </div>
       </section>
     </main>
+    <!--Scripts-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
   </body>
 </html>

@@ -7,13 +7,13 @@ const Dino = require("../models/dinos");
  *
  * */
 
-//populate DB
+//populate DB TICK
 const populateDB = async (req, res) => {
   const data = req.body;
   try {
     const dinos = await Dino.insertMany(data);
 
-    return res.status(200).json({ msg: "success", data: dinos });
+    return res.status(200).json({ msg: "success", data: data });
   } catch (error) {
     return res.status(404).json({ msg: error.message });
   }
@@ -34,8 +34,8 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
   try {
     console.log(req.ip);
-    const dinos = await Dino.find({});
-    return res.status(200).json({ msg: "success!", data: dinos });
+    const data = await Dino.find({}, { _id: 0, __v: 0 }); //Second object passed to this function omits the _id and __v fields
+    return res.status(200).json(data);
   } catch (error) {
     return res.status(404).json({ msg: error });
   }
@@ -62,13 +62,48 @@ const getDino = async (req, res) => {
   }
 };
 
-//Retrieve a RANDOM Dino from the DB
+//Retrieve a RANDOM Dino from the DB TICK
 
 const randomDoc = async (req, res) => {
   try {
-    const randomDino = await Dino.aggregate([{ $sample: { size: 1 } }]);
-    console.log(randomDino[0]);
-    return res.status(200).json({ msg: "Success!", data: randomDino[0] });
+    const randomDino = await Dino.aggregate([
+      { $sample: { size: 1 } },
+      { $project: { _id: 0, __v: 0 } }, //OMITS THE ANNOYING _id and __v fields
+    ]);
+    //console.log(randomDino[0]);
+    //res.status(200).json({ msg: "Success!", data: randomDino[0] });
+    return randomDino[0];
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+//compare user guess TICK
+const userGuess = async (req, res) => {
+  //answer object will store correct/inccorect matches
+  answer = {};
+  try {
+    //Get User Guess
+    const userguess = req;
+    //Get DOTD
+    const dotd = await randomDoc(req, res);
+    console.log(userguess);
+    //Compare both objects
+    //First iterate through the DOTD object.
+    //Checks if key exists within DOTD
+    //Validating the user's guess against the DOTD "2" = correct guess, "+/-1" = incorrect with hint (greater or less than), "0" incorrect guess
+    for (key in dotd) {
+      if (dotd.hasOwnProperty(key)) {
+        if (userguess[key] == dotd[key]) {
+          answer[key] = 2;
+        } else if (typeof userguess[key] == "number") {
+          userguess[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
+        } else {
+          answer[key] = 0;
+        }
+      }
+    }
+    res.status(200).json({ "Success!": answer });
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
@@ -125,4 +160,5 @@ module.exports = {
   removeDino,
   populateDB,
   randomDoc,
+  userGuess,
 };
