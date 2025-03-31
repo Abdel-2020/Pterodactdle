@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pterodactdle!</title>
     <!--Stylesheet-->
+
     <link rel="stylesheet" href="./normalize.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <section>
@@ -15,9 +17,16 @@
       <section>
         <h2>Guess today's dinosaur!</h2>
         <p>Type any Dinosaur to begin.</p>
-        <form action="/api/v1/dinos/userguess" method="POST">
-          <input type="text" name="" value="Enter dinosaur name" />
-          <button type="button">Enter</button>
+        <form id="userGuessForm" autocomplete="off">
+          <div class="autocomplete">
+            <input
+              id="autocomplete-input"
+              type="text"
+              name="userGuess"
+              placeholder="Guess a Dinosaur!"
+            />
+          </div>
+          <input id="autocomplete-submit" type="submit" />
         </form>
       </section>
       <section class="matrix">
@@ -27,6 +36,7 @@
       </section>
     </main>
     <!--Scripts-->
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./index.js"></script>
   </body>

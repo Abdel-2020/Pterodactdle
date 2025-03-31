@@ -1,0 +1,83 @@
+<!--
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pterodactdle!</title>
+    <!--Stylesheet-->
+<!--
+    <link rel="stylesheet" href="./normalize.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section>
+      <h1>Pterodactdle</h1>
+    </section>
+    <main>
+      <section>
+        <h2>Guess today's dinosaur!</h2>
+        <p>Type any Dinosaur to begin.</p>
+        <form autocomplete="off" action="/api/v1/dinos/userguess" method="POST">
+          <div class="autocomplete">
+            <input
+              id="myInput"
+              type="text"
+              name="userGuess"
+              placeholder="Guess a Dinosaur"
+            />
+          </div>
+          <input type="submit" />
+          <script>
+            const dinoArray = [
+              "Pteranodon",
+              "Quetzalcoatlus",
+              "Rhamphorhynchus",
+              "Dimorphodon",
+              "Tapejara",
+              "Dsungaripterus",
+              "Anhanguera",
+              "Nyctosaurus",
+            ];
+
+            autocomplete(document.getElementById("myInput"), dinoArray);
+          </script>
+        </form>
+      </section>
+      <section class="matrix">
+        <div>
+          <h3>Color Indicators</h3>
+        </div>
+      </section>
+    </main>
+    <!--Scripts-->
+<!--
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autocomplete</title>
+    <link rel="stylesheet" href="styles.css">
+</head>     
+<body>
+
+<h2>Autocomplete</h2>
+<p>Start typing:</p>
+
+<form autocomplete="off" action="/action_page.php">
+    <div class="autocomplete" style="width:300px;">
+        <input id="myInput" type="text" name="myCountry" placeholder="Country">
+    </div>
+    <input type="submit">
+</form>
+
+<script src="index.js"></script>
+</body>
+</html>

@@ -34,7 +34,7 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
   try {
     console.log(req.ip);
-    const data = await Dino.find({}, { _id: 0, __v: 0 }); //Second object passed to this function omits the _id and __v fields
+    const data = await Dino.find({}, { _id: 0, period:0, diet:0, clade:0, height:0, weight:0, __v: 0 }); //Second object passed to this function omits the _id and __v fields
     return res.status(200).json(data);
   } catch (error) {
     return res.status(404).json({ msg: error });
@@ -62,6 +62,7 @@ const getDino = async (req, res) => {
   }
 };
 
+
 //Retrieve a RANDOM Dino from the DB TICK
 
 const randomDoc = async (req, res) => {
@@ -78,36 +79,44 @@ const randomDoc = async (req, res) => {
   }
 };
 
-//compare user guess TICK
+//get user guess TICK
 const userGuess = async (req, res) => {
   //answer object will store correct/inccorect matches
   answer = {};
   try {
     //Get User Guess
-    const userguess = req;
+    const userGuess = req.body;
+    //Find dino in DB
+    const userGuessDino = await Dino.findOne(userGuess, { _id: 0, __v: 0 });
+    //
+    // console.log(dino);
     //Get DOTD
     const dotd = await randomDoc(req, res);
-    console.log(userguess);
+
     //Compare both objects
     //First iterate through the DOTD object.
     //Checks if key exists within DOTD
     //Validating the user's guess against the DOTD "2" = correct guess, "+/-1" = incorrect with hint (greater or less than), "0" incorrect guess
     for (key in dotd) {
       if (dotd.hasOwnProperty(key)) {
-        if (userguess[key] == dotd[key]) {
+        if (userGuessDino[key] == dotd[key]) {
           answer[key] = 2;
-        } else if (typeof userguess[key] == "number") {
-          userguess[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
+        } else if (typeof userGuessDino[key] == "number") {
+          userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
         } else {
           answer[key] = 0;
         }
+        }
       }
-    }
-    res.status(200).json({ "Success!": answer });
+      console.log(answer)
+      res.status(200).json({ answer });
+   
   } catch (error) {
+    //console.log(error);
     res.status(500).json({ msg: error.message });
   }
 };
+
 
 //Update dino TICK
 const editDino = async (req, res) => {
