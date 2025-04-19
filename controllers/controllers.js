@@ -1,14 +1,21 @@
 const Dino = require("../models/dinos");
+const cron = require("node-cron");
+const {result} = require("../logic/result");
+
+console.log(result);
 /*
  * DB Management
- *
- *
- *
- *
- * */
+ * Create Many
+ * Create One
+ * Read All
+ * Read One
+ * Read One Random
+ * Update One
+ * Delete One
+ */
 
-//populate DB TICK
-const populateDB = async (req, res) => {
+//Create Many
+/*const populateDB = async (req, res) => {
   const data = req.body;
   try {
     const dinos = await Dino.insertMany(data);
@@ -18,8 +25,9 @@ const populateDB = async (req, res) => {
     return res.status(404).json({ msg: error.message });
   }
 };
+*/
 
-//create a dino and add it to the db TICK
+//Create One
 const createDino = async (req, res) => {
   try {
     const dino = await Dino.create(req.body);
@@ -30,18 +38,21 @@ const createDino = async (req, res) => {
   }
 };
 
-//retrieve all dinos from the db TICK
+//Read All
 const getAllDinos = async (req, res) => {
   try {
     console.log(req.ip);
-    const data = await Dino.find({}, { _id: 0, period:0, diet:0, clade:0, height:0, weight:0, __v: 0 }); //Second object passed to this function omits the _id and __v fields
+    const data = await Dino.find(
+      {},
+      { _id: 0, period: 0, diet: 0, clade: 0, height: 0, weight: 0, __v: 0 },
+    ); //Second object passed to this function omits the _id and __v fields
     return res.status(200).json(data);
   } catch (error) {
     return res.status(404).json({ msg: error });
   }
 };
 
-//retrieve a specifc dino from the db TICK
+//Read One
 const getDino = async (req, res) => {
   try {
     //grab route parameter
@@ -62,63 +73,7 @@ const getDino = async (req, res) => {
   }
 };
 
-
-//Retrieve a RANDOM Dino from the DB TICK
-
-const randomDoc = async (req, res) => {
-  try {
-    const randomDino = await Dino.aggregate([
-      { $sample: { size: 1 } },
-      { $project: { _id: 0, __v: 0 } }, //OMITS THE ANNOYING _id and __v fields
-    ]);
-    //console.log(randomDino[0]);
-    //res.status(200).json({ msg: "Success!", data: randomDino[0] });
-    return randomDino[0];
-  } catch (error) {
-    res.status(500).json({ msg: error.message });
-  }
-};
-
-//get user guess TICK
-const userGuess = async (req, res) => {
-  //answer object will store correct/inccorect matches
-  answer = {};
-  try {
-    //Get User Guess
-    const userGuess = req.body;
-    //Find dino in DB
-    const userGuessDino = await Dino.findOne(userGuess, { _id: 0, __v: 0 });
-    //
-    // console.log(dino);
-    //Get DOTD
-    const dotd = await randomDoc(req, res);
-
-    //Compare both objects
-    //First iterate through the DOTD object.
-    //Checks if key exists within DOTD
-    //Validating the user's guess against the DOTD "2" = correct guess, "+/-1" = incorrect with hint (greater or less than), "0" incorrect guess
-    for (key in dotd) {
-      if (dotd.hasOwnProperty(key)) {
-        if (userGuessDino[key] == dotd[key]) {
-          answer[key] = 2;
-        } else if (typeof userGuessDino[key] == "number") {
-          userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
-        } else {
-          answer[key] = 0;
-        }
-        }
-      }
-      console.log(answer)
-      res.status(200).json({ answer });
-   
-  } catch (error) {
-    //console.log(error);
-    res.status(500).json({ msg: error.message });
-  }
-};
-
-
-//Update dino TICK
+//Update One
 const editDino = async (req, res) => {
   try {
     //grab route parameter
@@ -142,7 +97,7 @@ const editDino = async (req, res) => {
   }
 };
 
-//Remove a Dino TICK
+//Delete One
 const removeDino = async (req, res) => {
   try {
     const { id } = req.params;
@@ -156,10 +111,80 @@ const removeDino = async (req, res) => {
   }
 };
 
-//Dino of the day logic
-//retrieve all data from mongoose db.
-//Since it's stored in an array can do a random number pick?
+/*
+ * Guessing logic
+ * randomDoc{} - Pulls random document from DB and stores it in dotd.
+ * userGuess{} - Uses the user's input to retrieve a dinosaur from the DB and stores it in userGuessDino
+ * result{}    - Compare both objects and return an answer object (see below)
+ *
+ * */
 
+let dotd = null;
+let userGuessDino = null;
+
+//Read One Random
+const randomDoc = async (req, res) => {
+  try {
+    const randomDino = await Dino.aggregate([
+      { $sample: { size: 1 } },
+      { $project: { _id: 0, __v: 0 } }, //OMITS THE ANNOYING _id and __v fields
+    ]);
+    dotd = randomDino[0];
+    console.log(`(Inside randomDoc) ${JSON.stringify(dotd)}`);
+    //res.status(200).json({ msg: "Success!", data: randomDino[0] });
+    return dotd;
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+//cron job to call function once per day.
+
+cron.schedule("* * * * *", () => {
+  randomDoc();
+});
+
+const userGuess = async (req, res) => {
+  try {
+    userGuessDino = await Dino.findOne(req.body, { _id: 0, __v: 0 });
+    console.log(`(inside userGuess) ${JSON.stringify(userGuessDino)}`);
+    answer = result(userGuessDino, dotd);
+    return res.status(200).json(answer);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+/*
+const result = () => {
+  //answer object will store correct/incorrect matches
+  answer = {};
+  console.log(`(Inside Result) User Guess ${JSON.stringify(userGuessDino)}`);
+  console.log(`(Inside Result) DOTD: ${JSON.stringify(dotd)}`);
+
+  //Compare DOTD with User's guess:
+  //Iterate through the DOTD object.
+  //Check if key exists within DOTD
+  //Validating the user's guess against the DOTD:
+
+  //"2" = correct guess,
+  //"+/-1" = incorrect with hint (greater or less than),
+  //"0" incorrect guess
+
+  for (key in dotd) {
+    if (dotd.hasOwnProperty(key)) {
+      if (userGuessDino[key] == dotd[key]) {
+        answer[key] = 2;
+      } else if (typeof userGuessDino[key] == "number") {
+        userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
+      } else {
+        answer[key] = 0;
+      }
+    }
+  }
+  console.log(`(Inside Result) Answer: ${JSON.stringify(answer)}`);
+  return answer;
+};
+*/
 //Export to Routes
 module.exports = {
   getAllDinos,
@@ -167,7 +192,5 @@ module.exports = {
   createDino,
   editDino,
   removeDino,
-  populateDB,
-  randomDoc,
   userGuess,
 };

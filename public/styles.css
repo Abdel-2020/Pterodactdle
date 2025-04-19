@@ -1,6 +1,70 @@
+/*Fonts*/
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Patua+One&display=swap');
+/*Colours*/
+:root{
+  --darcula-black: hsl(231, 15%, 18%);
+}
+
+
 * {
   box-sizing: border-box;
+  background-color: var(--darcula-black);
+  color:hsl(45, 29%, 97%);
+
 }
+
+body{
+  height: 70%;
+  width:80%;
+  margin: 70px auto;
+}
+
+h1, h2, h3 {
+  font-family:'Patua One';
+  font-weight: 500;
+} 
+
+p{
+  font-family: 'lato';
+}
+
+
+
+.app-title{
+  text-align: center;
+  font-size: 3em;
+}
+
+
+
+.matrix{
+  background-color:#1212;
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.square{
+  height: 3em;
+  width: 3em;
+  border-radius: 4px;
+  
+}
+
+.red-square{
+  background-color: red;
+}
+.amber-square{
+  background-color: orange;
+}
+.green-square{
+  background-color: green;
+}
+
+
+/****************Autocomplete*************************/
+
+
 
 .autocomplete {
   position: relative;

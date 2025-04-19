@@ -11,12 +11,12 @@
   </head>
   <body>
     <section>
-      <h1>Pterodactdle</h1>
+      <h1 class="app-title">Pterodactdle</h1>
     </section>
     <main>
       <section>
         <h2>Guess today's dinosaur!</h2>
-        <p>Type any Dinosaur to begin.</p>
+        <p>Type any Dinosaur to begin:</p>
         <form id="userGuessForm" autocomplete="off">
           <div class="autocomplete">
             <input
@@ -29,14 +29,21 @@
           <input id="autocomplete-submit" type="submit" />
         </form>
       </section>
-      <section class="matrix">
-        <div>
-          <h3>Color Indicators</h3>
+      <section class="matrix-section">
+        <h3>Color Indicators</h3>
+        <div class="matrix">
+          <div class="square red-square"></div>
+          <div class="square amber-square"></div>
+          <div class="square green-square"></div>
         </div>
       </section>
-    </main>
-    <!--Scripts-->
+      <section class="results-section">
 
+    </section>
+      </section>
+    </main>
+    
+    <!--Scripts-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./index.js"></script>
   </body>
