@@ -1,3 +1,7 @@
+const userGuessForm = document.getElementById("userGuessForm");
+const resultsGrid = document.getElementsByClassName("results-section");
+
+
 //Get list of objects in DB
 const dinoArray = axios
   .get("/api/v1/dinos")
@@ -10,8 +14,11 @@ const dinoArray = axios
     console.log(error);
   });
 
-const userGuessForm = document.getElementById("userGuessForm");
+
+
+
 userGuessForm.addEventListener("submit", (e) => {
+  let answer = null; 
   e.preventDefault();
 
   const userGuess = document.getElementById("autocomplete-input").value;
@@ -20,13 +27,50 @@ userGuessForm.addEventListener("submit", (e) => {
       name: userGuess,
     })
     .then((res) => {
-      console.log(res.data);
+     displayGrid(res.data);
+    
     })
     .catch((error) => {
       console.log(error.response.data.msg);
     });
+  
+
+    
+
 });
 
-/* Working code
-function 
+/* Autocomplete
 */
+
+
+/* Answers
+*/
+
+let displayGrid = (answerObject) => {
+
+//Generate a line of squares each indicating if the attribute is:
+//Correct (green)
+//Partially Correct (Amber)
+//Incorrect (Red)
+const div = document.createElement("div");
+let greenSquare = div.setAttribute("class","square green-square")
+let redSquare = div.setAttribute("class","square red-square")
+let amberSquare = div.setAttribute("class","square amber-square")
+        
+  for(key in answerObject){
+    if (answerObject.hasOwnProperty(key)){
+      const value = answerObject[key];
+      if (value == 2){
+        resultsGrid[0].appendChild(greenSquare)
+        console.log(`${answerObject[key]} GREEN`)
+      } else if (value == 0){
+        resultsGrid[0].appendChild(redSquare)
+        console.log(`${answerObject[key]} RED`)
+      } else if (value == 1 || value == -1){
+        resultsGrid[0].appendChild(amberSquare)
+        console.log(`${answerObject[key]} AMBER`)
+      }
+    }
+
+}
+}

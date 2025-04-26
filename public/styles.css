@@ -2,44 +2,54 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Patua+One&display=swap');
 /*Colours*/
 :root{
-  --darcula-black: hsl(231, 15%, 18%);
+  --darcula-black: 		hsl(0, 0%, 10%);
 }
 
 
 * {
   box-sizing: border-box;
   background-color: var(--darcula-black);
-  color:hsl(45, 29%, 97%);
+  color:hsl(45, 29%, 96%);
 
 }
 
 body{
   height: 70%;
-  width:80%;
+  max-width:80%;
   margin: 70px auto;
 }
-
+section{
+  max-width: 500px;
+}
 h1, h2, h3 {
   font-family:'Patua One';
   font-weight: 500;
 } 
 
 p{
+  font-size:1.5em;
   font-family: 'lato';
 }
 
-
+.app-body{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 200px auto 100px;
+}
 
 .app-title{
   text-align: center;
-  font-size: 3em;
+  font-size: 4em;
 }
 
+.matrix-section{
+  margin: 50px 10px;
+}
 
 
 .matrix{
   background-color:#1212;
-  width: 60%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -61,6 +71,18 @@ p{
   background-color: green;
 }
 
+.results-section{
+  
+}
+
+.result-array{
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  max-width: 500px;
+  margin: 0 auto;
+}
 
 /****************Autocomplete*************************/
 
@@ -79,11 +101,15 @@ input {
 }
 
 #autocomplete-input {
+  font-family: 'lato';
+  color: black;
   background-color: #f1f1f1;
   width: 100%;
 }
 
 #autocomplete-submit {
+  font-family: 'lato';
+  font-weight: 600;
   background-color: DodgerBlue;
   color: #fff;
   cursor: pointer;
