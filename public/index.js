@@ -27,7 +27,8 @@ userGuessForm.addEventListener("submit", (e) => {
       name: userGuess,
     })
     .then((res) => {
-     displayGrid(res.data);
+      displayGrid(res.data);
+  
     
     })
     .catch((error) => {
@@ -52,23 +53,22 @@ let displayGrid = (answerObject) => {
 //Correct (green)
 //Partially Correct (Amber)
 //Incorrect (Red)
-const div = document.createElement("div");
-let greenSquare = div.setAttribute("class","square green-square")
-let redSquare = div.setAttribute("class","square red-square")
-let amberSquare = div.setAttribute("class","square amber-square")
-        
+const resultsSection = document.querySelector(".results-section");
+const div = document.createElement('div');
+div.setAttribute("class", "result-array");
+resultsArray = resultsSection.appendChild(div);
+
+
   for(key in answerObject){
+    
     if (answerObject.hasOwnProperty(key)){
       const value = answerObject[key];
       if (value == 2){
-        resultsGrid[0].appendChild(greenSquare)
-        console.log(`${answerObject[key]} GREEN`)
+        resultsArray.innerHTML  +=  '<div class="square green-square"></div>'
       } else if (value == 0){
-        resultsGrid[0].appendChild(redSquare)
-        console.log(`${answerObject[key]} RED`)
+        resultsArray.innerHTML += '<div class="square red-square"></div>'
       } else if (value == 1 || value == -1){
-        resultsGrid[0].appendChild(amberSquare)
-        console.log(`${answerObject[key]} AMBER`)
+        resultsArray.innerHTML   += '<div class="square amber-square"></div>'
       }
     }
 
