@@ -9,7 +9,7 @@
 
 * {
   box-sizing: border-box;
-  color: hsl(45, 29%, 96%);
+
 }
 
 body {
@@ -28,6 +28,7 @@ section {
 h1,
 h2,
 h3 {
+  color: #e9e9e9;
   font-family: 'Patua One';
   font-weight: 500;
 }
@@ -66,18 +67,6 @@ p {
 }
 
 
-
-.matrix-section {
-  margin: 50px auto;
-}
-
-
-.matrix {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-}
-
 .square {
   height: 3em;
   width: 3em;
@@ -94,26 +83,37 @@ p {
   background-color: orange;
 }
 
-.larger{
-  background-image: url('');
-}
-
 .green-square {
   background-color: green;
 }
 
-.results-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+.results-container-header{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows:auto;
+  justify-items: center;
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+
+.results-container{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows:auto;
+  justify-items: center;
+  max-width: 70%;
   margin: 0 auto;
 }
 
 .result-array {
-  display: flex;
-  flex-direction: row;
-  margin: 0 auto;
+  grid-column: 1/-1;
+  display:contents;
 }
+
+
+
+
 
 /****************Autocomplete*************************/
 
@@ -157,6 +157,7 @@ input {
   top: 100%;
   left: 0;
   right: 0;
+
 }
 
 .autocomplete-items div {
@@ -164,8 +165,14 @@ input {
   cursor: pointer;
   background-color: #fff;
   border-bottom: 1px solid #d4d4d4;
+
 }
 
 .autocomplete-items div:hover {
   background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
 }

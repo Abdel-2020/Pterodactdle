@@ -154,37 +154,36 @@ const userGuess = async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
+
 /*
-const result = () => {
-  //answer object will store correct/incorrect matches
-  answer = {};
-  console.log(`(Inside Result) User Guess ${JSON.stringify(userGuessDino)}`);
-  console.log(`(Inside Result) DOTD: ${JSON.stringify(dotd)}`);
+ * Send array of dinos for autocomplete list
+ * 
+ *  
+ * 
+ *
+ * */
 
-  //Compare DOTD with User's guess:
-  //Iterate through the DOTD object.
-  //Check if key exists within DOTD
-  //Validating the user's guess against the DOTD:
-
-  //"2" = correct guess,
-  //"+/-1" = incorrect with hint (greater or less than),
-  //"0" incorrect guess
-
-  for (key in dotd) {
-    if (dotd.hasOwnProperty(key)) {
-      if (userGuessDino[key] == dotd[key]) {
-        answer[key] = 2;
-      } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
-      } else {
-        answer[key] = 0;
-      }
-    }
+const getCleanArray = async (req, res) => {
+  try{
+    let dinos = await Dino.find().select("name -_id");
+    let cleanArray = dinos.map(dino => dino.name);
+    res.status(200).json(cleanArray);
+  } catch (error){
+    res.status(500).json({msg: error.message});
   }
-  console.log(`(Inside Result) Answer: ${JSON.stringify(answer)}`);
-  return answer;
-};
-*/
+}
+
+
+
+
+
+
+
+
+
+
+
 //Export to Routes
 module.exports = {
   getAllDinos,
@@ -193,4 +192,5 @@ module.exports = {
   editDino,
   removeDino,
   userGuess,
+  getCleanArray
 };

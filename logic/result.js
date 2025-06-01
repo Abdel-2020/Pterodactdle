@@ -1,6 +1,3 @@
-
-
-
 const result = (userGuessDino, dotd) => {
   //answer object will store correct/incorrect matches
   answer = {};
@@ -22,13 +19,13 @@ const result = (userGuessDino, dotd) => {
       if (userGuessDino[key] == dotd[key]) {
         answer[key] = 2;
       } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (answer[key] = 1) : (answer[key] = 1);
+        userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
       } else {
         answer[key] = 0;
       }
     }
   }
-  //console.log(`(Inside Result) Answer: ${JSON.stringify(answer)}`);
+  console.log(`(Inside Result) Answer: ${JSON.stringify(answer)}`);
   return answer;
 };
 
