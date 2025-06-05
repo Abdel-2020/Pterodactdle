@@ -109,12 +109,7 @@ userGuessForm.addEventListener("keydown", (e)=>{
 
 
 
-
-
-
-/* Autocomplete
- */
-
+//Autocomplete
 let autocomplete = (inp, arr) => {
 
   //currentFocus will keep track of which item in the list is in focus
@@ -129,8 +124,8 @@ let autocomplete = (inp, arr) => {
     let list;
     let item;
     let value = inp.value;
-    console.log(value);
-    closeAllLists();
+   
+
     currentFocus = -1;
     if (!value) {
       return false;
@@ -151,20 +146,22 @@ let autocomplete = (inp, arr) => {
 
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].substr(0, value.length).toUpperCase() == value.toUpperCase()) {
-        //console.log(`In loop: ${arr[i].substr(0, value.length)}`);
+    
         //create a div for each matching item
         item = document.createElement("div");
         item.setAttribute("class", "list-item")
         item.innerHTML = `<strong>${arr[i].substr(0, value.length)}</strong> `;
         item.innerHTML += arr[i].substr(value.length);
+
         //Create a hidden input field to hold the array item's value
         item.innerHTML += `<input type="hidden"  value = "${arr[i]}">`;
         //Execute function when item is clicked.
 
         item.addEventListener("click", (e) => {
-          //console.log(e);
+
           //insert the value from the autocomplete field
           inp.value = e.target.getElementsByTagName("input")[0].value;
+             
           //close the list
           closeAllLists();
         })
@@ -180,20 +177,17 @@ let autocomplete = (inp, arr) => {
     if (list) {
       item = list.getElementsByClassName("list-item");
     }
-    if (e.keyCode == 40) {
+    if (e.code == "ArrowDown") {
       //If down key is pressed, increase the counter.
       //Make the current item more visible
       currentFocus++;
-      //console.log("Key Down: " + currentFocus);
       addActive(item);
-    } else if (e.keyCode == 38) {
+    } else if (e.code == "ArrowUp") {
       currentFocus--;
-      //console.log("Key Up: " + currentFocus);
       addActive(item);
-    } else if (e.keyCode == 13) {
+    } else if (e.code == "Enter") {
       e.preventDefault();
       if (currentFocus > -1) {
-        //console.log("Key Enter: " + currentFocus + " " + item[currentFocus].textContent);
         if (item) {
           item[currentFocus].click();
         }
