@@ -1,4 +1,4 @@
-//express
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const port = 5050;
@@ -9,14 +9,13 @@ const dinos = require("./routes/routes");
 //DB Connection
 const connectDB = require("./db/connect");
 
-//dotenv
-require("dotenv").config();
+//Mongo Session Store
+const sessionMiddleware = require("./session/sessions");
 
 //Middleware
+app.use(sessionMiddleware);
 app.use(express.json());
 app.use(express.static("./public"));
-
-//console.log(process.env.MONGO_URI);
 
 const start = async () => {
   try {

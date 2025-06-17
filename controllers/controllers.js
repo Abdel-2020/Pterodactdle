@@ -139,8 +139,8 @@ const randomDoc = async (req, res) => {
 };
 
 //cron job to call function once per day.
-
-cron.schedule("* * * * *", () => {
+randomDoc();
+cron.schedule("0 0 * * *", () => {
   randomDoc();
 });
 
