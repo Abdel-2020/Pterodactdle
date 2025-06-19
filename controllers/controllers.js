@@ -2,6 +2,8 @@ const Dino = require("../models/dinos");
 const cron = require("node-cron");
 const {result} = require("../logic/result");
 
+
+
 console.log(result);
 /*
  * DB Management
@@ -42,6 +44,9 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
   try {
     console.log(req.ip);
+      req.session.visited = true;
+      console.log(req.session);
+      console.log(req.session.id);
     const data = await Dino.find(
       {},
       { _id: 0, period: 0, diet: 0, clade: 0, height: 0, weight: 0, __v: 0 },
@@ -174,12 +179,13 @@ const getCleanArray = async (req, res) => {
   }
 }
 
-
-
-
-
-
-
+/*
+ * Sessions?
+ * 
+ *  
+ * 
+ *
+ * */
 
 
 

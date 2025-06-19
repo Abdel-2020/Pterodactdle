@@ -24,6 +24,8 @@ let dinosaurs = loadDinos()
 });
 */
 
+
+
 let dinosaurs = [
   "Spinosaurus",
   "Tyrannosaurus Rex",
