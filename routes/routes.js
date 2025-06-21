@@ -7,11 +7,11 @@ const {
   editDino,
   removeDino,
   userGuess,
-  getCleanArray,
+  endGame,
 } = require("../controllers/controllers");
 
 router.route("/").get(getAllDinos).post(createDino);
-router.route("/getList").get(getCleanArray);
+router.route("/endGame").post(endGame)
 router.route("/userGuess").post(userGuess);
 router.route("/:id").get(getDino).patch(editDino).delete(removeDino);
 

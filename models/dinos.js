@@ -32,13 +32,11 @@ const DinoSchema = new mongoose.Schema({
   },
   height: {
     type: Number,
-    require: [true, "A height value of type Number must be entered"],
-    trim: true,
+    required: [true, "A height value of type Number must be entered"],
   },
   weight: {
     type: Number,
-    require: [true, "A weight value of type Number must be entered"],
-    trim: true,
+    required: [true, "A weight value of type Number must be entered"],
   },
 });
 

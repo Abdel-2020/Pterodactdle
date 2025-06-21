@@ -1,29 +1,3 @@
-//Get list of objects in DB
-/*
-function getArrayFromDb() {
-  return axios
-    .get("/api/v1/dinos/getList")
-    .then((res) => {
-      return res.data})
-    .catch((error) => {
-      console.log(error);
-      return []; // return an empty array if error occurs
-    });
-}
-async function loadDinos (){
-let dinos = await getArrayFromDb();
-return dinos;
-} 
-
-let dinosaurs = loadDinos()
-.then((res) => {
- 
-})
-.catch((error) => {
-  console.log(error);
-});
-*/
-
 
 
 let dinosaurs = [
@@ -235,6 +209,18 @@ function endGame() {
   input.setAttribute("type", "hidden");
   submitBtn.setAttribute("type", "hidden");
   appSubtitle.innerText = "Well Done! Try again Tomorrow.";
+
+  return axios
+    .post("api/v1/dinos/endGame")
+    .then((res)=>{
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+
+
+
 }
 
 //This function builds the answer according to the values in answer object.

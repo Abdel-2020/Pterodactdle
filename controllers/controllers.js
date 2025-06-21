@@ -43,8 +43,8 @@ const createDino = async (req, res) => {
 //Read All
 const getAllDinos = async (req, res) => {
   try {
-    console.log(req.ip);
-      req.session.visited = true;
+      console.log(req.ip);
+      req.session.cookieFlavour="oatmeal/raisin";
       console.log(req.session);
       console.log(req.session.id);
     const data = await Dino.find(
@@ -151,6 +151,14 @@ cron.schedule("0 0 * * *", () => {
 
 const userGuess = async (req, res) => {
   try {
+
+    if (req.session.attempts){
+      req.session.attempts++;
+    } else {
+      req.session.attempts = 1;
+    }
+    console.log(req.session.attempts);
+
     userGuessDino = await Dino.findOne(req.body, { _id: 0, __v: 0 });
     console.log(`(inside userGuess) ${JSON.stringify(userGuessDino)}`);
     answer = result(userGuessDino, dotd);
@@ -188,6 +196,19 @@ const getCleanArray = async (req, res) => {
  * */
 
 
+const endGame = async(req, res) => {
+  try{
+  req.session.endGame = true;
+  req.session.endGameMsg = "Well Done, try again tomorrow.";
+  console.log(req.session);
+  res.status(200).json(req.session.attempts);
+  } catch (error) {
+    res.status(500).json({msg: error.message});
+  }
+ 
+}
+
+
 
 
 //Export to Routes
@@ -198,5 +219,5 @@ module.exports = {
   editDino,
   removeDino,
   userGuess,
-  getCleanArray
+  endGame
 };
