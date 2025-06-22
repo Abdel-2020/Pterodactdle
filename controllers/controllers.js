@@ -6,7 +6,7 @@ const {result} = require("../logic/result");
 
 console.log(result);
 /*
- * DB Management
+ * DB Management/API Calls
  * Create Many
  * Create One
  * Read All
@@ -44,9 +44,6 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
   try {
       console.log(req.ip);
-      req.session.cookieFlavour="oatmeal/raisin";
-      console.log(req.session);
-      console.log(req.session.id);
     const data = await Dino.find(
       {},
       { _id: 0, period: 0, diet: 0, clade: 0, height: 0, weight: 0, __v: 0 },
@@ -118,8 +115,8 @@ const removeDino = async (req, res) => {
 
 /*
  * Guessing logic
- * randomDoc{} - Pulls random document from DB and stores it in dotd.
- * userGuess{} - Uses the user's input to retrieve a dinosaur from the DB and stores it in userGuessDino
+ * randomDoc{} - Pulls random document from DB and stores it in dotd. Cron Job runs once a day.
+ * userGuess{} - Uses the clients input to retrieve a dinosaur from the DB and stores it in userGuessDino
  * result{}    - Compare both objects and return an answer object (see below)
  *
  * */
@@ -149,18 +146,24 @@ cron.schedule("0 0 * * *", () => {
   randomDoc();
 });
 
+
 const userGuess = async (req, res) => {
   try {
-
     if (req.session.attempts){
       req.session.attempts++;
     } else {
       req.session.attempts = 1;
     }
-    console.log(req.session.attempts);
 
+    if(req.session.guess){
+      req.session.guess += JSON.stringify(req.body);
+    } else {
+      req.session.guess = JSON.stringify(req.body);
+    }
+  
+  
+    console.log(req.session);
     userGuessDino = await Dino.findOne(req.body, { _id: 0, __v: 0 });
-    console.log(`(inside userGuess) ${JSON.stringify(userGuessDino)}`);
     answer = result(userGuessDino, dotd);
     return res.status(200).json(answer);
   } catch (error) {
@@ -175,9 +178,7 @@ const userGuess = async (req, res) => {
  *  
  * 
  *
- * */
-
-const getCleanArray = async (req, res) => {
+ * const getCleanArray = async (req, res) => {
   try{
     let dinos = await Dino.find().select("name -_id");
     let cleanArray = dinos.map(dino => dino.name);
@@ -187,13 +188,17 @@ const getCleanArray = async (req, res) => {
   }
 }
 
+ * */
+
+
 /*
- * Sessions?
+ * Sessions Management?
  * 
  *  
  * 
  *
  * */
+
 
 
 const endGame = async(req, res) => {

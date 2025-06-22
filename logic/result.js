@@ -1,19 +1,21 @@
 const result = (userGuessDino, dotd) => {
-  //answer object will store correct/incorrect matches
-  answer = {};
+  //Create the results matrix
+  let arr = [];
 
   for (key in dotd) {
     if (dotd.hasOwnProperty(key)) {
       if (userGuessDino[key] == dotd[key]) {
-        answer[key] = 2;
+        arr.push( `<div class="square green-square"></div>`);
       } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (answer[key] = -1) : (answer[key] = 1);
+        userGuessDino[key] < dotd[key] ? (arr.push( `<div class="square amber-square"></div>`)) : (arr.push( `<div class="square amber-square"></div>`));
       } else {
-        answer[key] = 0;
+        arr.push( `<div class="square red-square"></div>`);
       }
     }
   }
-  return answer;
+  let row = "";
+  row = row.concat('<div class="result-array">',...arr, '</div>');
+  return row;
 };
 
 module.exports = { result };

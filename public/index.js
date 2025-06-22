@@ -1,5 +1,3 @@
-
-
 let dinosaurs = [
   "Spinosaurus",
   "Tyrannosaurus Rex",
@@ -48,7 +46,7 @@ function sendToServer(string) {
     )
     .then((res) => {
       //console.log(res.data);
-      answerMatrix(res.data);
+      parseResponse(res.data);
     })
     .catch((error) => {
       console.log(error);
@@ -197,13 +195,14 @@ let autocomplete = (inp, arr) => {
   });
 };
 
-/* Answer Matrix & Calculating Win Condition*/
-
+/* Answer Matrix & Calculating Win Condition
 function isCorrect(answerObject) {
   return Object.values(answerObject).every((value) => value === 2);
 }
+*/
 
 //Stop player from entering inputs by hiding the input and submit fields.
+
 function endGame() {
   let appSubtitle = document.getElementById("app-subtitle");
   input.setAttribute("type", "hidden");
@@ -218,51 +217,15 @@ function endGame() {
     .catch((error) => {
       console.log(error);
     })
-
-
-
 }
 
-//This function builds the answer according to the values in answer object.
-function answerMatrix(answerObject) {
+
+//Parse the HTML string and render to browser
+function parseResponse(htmlString) {
+  const parser = new DOMParser();
+  row = parser.parseFromString(htmlString, "text/html");
   const resultsContainer = document.querySelector(".results-container");
-
-  //Create Row Element
-  const resultsArray = document.createElement("div");
-  resultsArray.setAttribute("class", "result-array");
-
-  //Generate a line of squares each indicating if the attribute is:
-  //Correct (green)
-  //Partially Correct (Amber)
-  //Incorrect (Red)
-
-  for (key in answerObject) {
-    //Create the squares
-
-    const greenSquare = document.createElement("div");
-    const amberSquare = document.createElement("div");
-    const redSquare = document.createElement("div");
-
-    greenSquare.setAttribute("class", "square green-square");
-    amberSquare.setAttribute("class", "square amber-square");
-    redSquare.setAttribute("class", "square red-square");
-
-    if (answerObject.hasOwnProperty(key)) {
-      if (answerObject[key] == 2) {
-        resultsArray.append(greenSquare);
-      } else if (answerObject[key] == 1 || answerObject[key] == -1) {
-        resultsArray.append(amberSquare);
-      } else {
-        resultsArray.append(redSquare);
-      }
-    }
-  }
-  resultsContainer.prepend(resultsArray);
-
-  //Check if the answer is correct, if so end the game.
-  if (isCorrect(answerObject)) {
-    endGame();
-  }
+  resultsContainer.prepend(row.getElementsByTagName('div')[0]);
 }
 
 autocomplete(document.getElementById("autocomplete-input"), dinosaurs);
