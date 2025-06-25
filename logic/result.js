@@ -1,21 +1,38 @@
-const result = (userGuessDino, dotd) => {
-  //Create the results matrix
+const answerObj = (userGuessDino, dotd) => {
+//Create the results matrix by comparing values between objects and assign a square.
   let arr = [];
+  let html = "";
 
   for (key in dotd) {
     if (dotd.hasOwnProperty(key)) {
       if (userGuessDino[key] == dotd[key]) {
-        arr.push( `<div class="square green-square"></div>`);
+        arr.push(`<div class="square green-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
       } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (arr.push( `<div class="square amber-square"></div>`)) : (arr.push( `<div class="square amber-square"></div>`));
+        userGuessDino[key] < dotd[key] ? (arr.push(`<div class="square amber-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`)) : (arr.push(`<div class="square amber-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`));
       } else {
-        arr.push( `<div class="square red-square"></div>`);
+        arr.push(`<div class="square red-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
       }
     }
   }
-  let row = "";
-  row = row.concat('<div class="result-array">',...arr, '</div>');
-  return row;
-};
 
-module.exports = { result };
+  //Check if all values are correct (green-square)
+  function isCorrect (arr) {
+    const isGreen = (elmnt) => elmnt.includes(`green-square`);
+
+
+    if (arr){
+          return arr.every(isGreen);
+    }
+  }
+
+  //Insert the row into the container
+  html = html.concat('<div class="result-array">', ...arr, '</div>');
+
+  //return object
+  return {correct: isCorrect(arr), html:html};
+
+}
+
+module.exports = {
+  answerObj,
+};

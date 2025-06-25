@@ -12,7 +12,8 @@ module.exports = session({
     path: "/", 
     httpOnly: true, 
     secure: false, 
-    maxAge: (60000*60)*24, 
+    //maxAge: (60000*60)*24, 
+    maxAge:60000
  
   },
   
