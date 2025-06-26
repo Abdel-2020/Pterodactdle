@@ -64,7 +64,7 @@ p {
   width: 5em;
   height: 5em;
   padding: 2px;
-  margin: 5px;
+  margin: 8px;
   border-radius: 8px;
   word-break: break-all;
   text-align: center;
@@ -75,6 +75,10 @@ p {
   color: white;
   -webkit-text-stroke: 4px black;
   paint-order: stroke fill;
+  position:relative;
+ 
+  z-index: 3;
+  
 }
 
 .red-square {
@@ -83,8 +87,30 @@ p {
 }
 
 .amber-square {
+  
   background-color: orange;
   border:3px solid darkorange;
+  position: relative;
+  z-index: 1;
+}
+
+.up-arrow{
+  position: absolute;
+  right:5px;
+  z-index: 2;
+  transform: rotate(-0.50turn);
+  width: 4em;
+  height: 4em;
+
+}
+
+.down-arrow{
+  position: absolute;
+  right:5px;
+  z-index: 2;
+  transform: rotate(1turn);
+  width: 4em;
+  height: 4em;
 }
 
 .green-square {
@@ -107,14 +133,21 @@ p {
   grid-template-rows:auto;
   justify-items: center;
   width:600px;
-  margin: 0 auto;
+  margin: auto;
 }
 
 .result-array {
   grid-column: 1/-1;
   display:contents;
 }
-
+.matrix-section{
+  width: 600px;
+  margin: auto;
+}
+.matrix{
+  display: flex;
+  flex-direction: row;
+}
 
 
 /****************Autocomplete*************************/

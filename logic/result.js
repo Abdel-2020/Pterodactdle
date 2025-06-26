@@ -8,7 +8,7 @@ const answerObj = (userGuessDino, dotd) => {
       if (userGuessDino[key] == dotd[key]) {
         arr.push(`<div class="square green-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
       } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (arr.push(`<div class="square amber-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`)) : (arr.push(`<div class="square amber-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`));
+        userGuessDino[key] < dotd[key] ? (arr.push(`<div class="square amber-square"><img class="up-arrow" src="./images/arrow-svgrepo-com.svg" alt=""><p>${userGuessDino[key]}</p></div>`)) : (arr.push(`<div class="square amber-square"><img class="down-arrow" src="./images/arrow-svgrepo-com.svg" alt=""><p>${userGuessDino[key]}</p></div>`));
       } else {
         arr.push(`<div class="square red-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
       }
