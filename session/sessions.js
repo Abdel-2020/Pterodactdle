@@ -21,5 +21,5 @@ module.exports = session({
   resave: false, 
   //A session is Uninitialized when it is new and unmodified. 
   //(Useful for saving server storage and/or complying with laws that require permission before setting a cookie)
-  saveUninitialized: false 
+  saveUninitialized: false,
 });

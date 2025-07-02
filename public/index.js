@@ -1,31 +1,22 @@
-  //Retrieve session data if it exists
-  window.addEventListener("DOMContentLoaded", () => {
-    axios
-      .get("/api/v1/dinos/sess")
-      .then((res) => {
-        //console.log(JSON.stringify(res.data))
-        if (res.data.endGame) {
-          endGame(res.data.attempts);
-        }
-        if (res.data.html) {
-          parseResponse(res.data.html)
-        }
+  //DOM Elements
+  const resultsContainer = document.querySelector(".results-container");
+  const userGuessForm = document.getElementById("userGuessForm");
+  const submitBtn = document.getElementById("autocomplete-submit");
+  const input = document.getElementById("autocomplete-input");
 
-      }, {
-        withCredenitals: true
-      }, )
-      .catch((error) => {
-        console.log(error)
-      })
-  })
-
-
-  //Parse the HTML string and render to browser
+ 
+  //Parse the HTML string 
   function parseResponse(htmlString) {
     const parser = new DOMParser();
-    row = parser.parseFromString(htmlString, "text/html");
-    const resultsContainer = document.querySelector(".results-container");
-    resultsContainer.prepend(...row.getElementsByTagName('div'));
+    const html = parser.parseFromString(htmlString, "text/html");
+    return html;
+  }
+
+  //Display string on browser
+  function prependRow (container, html){
+    console.log(...html.getElementsByTagName('div'))
+    container.prepend(...html.getElementsByTagName('div'));
+
   }
 
   //update the html with end game msg
@@ -33,7 +24,13 @@
     let appSubtitle = document.getElementById("app-subtitle");
     input.setAttribute("type", "hidden");
     submitBtn.setAttribute("type", "hidden");
-    appSubtitle.innerText = `Well Done! It took you ${guessCount} guess(es)!\n Try again Tomorrow.`;
+
+    if(guessCount > 1) {
+    appSubtitle.innerText = `Well Done! It took you ${guessCount} guesses!\n Try again Tomorrow.`;
+    } else {
+    appSubtitle.innerText = `Well Done! It took you ${guessCount} guess!\n Try again Tomorrow.`;
+    }
+    
   }
 
   //Self explanatory
@@ -43,21 +40,41 @@
         "/api/v1/dinos/userGuess", {
           name: string,
         }, {
-          withCredenitals: true
+          withCredentials: true
         },
       )
       .then((res) => {
-
+        prependRow(resultsContainer, parseResponse(res.data.html));
         if (res.data.answer) {
           endGame(res.data.attempts);
         }
-        parseResponse(res.data.html);
+        
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
+  //Retrieve session data if it exists
+  window.addEventListener("DOMContentLoaded", () => {
+    axios
+      .get("/api/v1/dinos/sess")
+      .then((res) => {
+        console.log(JSON.stringify(res))
+        if (res.data.endGame) {
+          endGame(res.data.attempts);
+        }
+        if (res.data.html) {
+          prependRow(resultsContainer, parseResponse(res.data.html));
+        }
+
+      }, {
+        withCredenitals: true
+      }, )
+      .catch((error) => {
+        console.log(error)
+      })
+  })
 
   let dinosaurs = [
     "Spinosaurus",
@@ -92,12 +109,6 @@
   ];
 
 
-  let userGuessForm = document.getElementById("userGuessForm");
-  let submitBtn = document.getElementById("autocomplete-submit");
-  let input = document.getElementById("autocomplete-input");
-
-
-
   //Trigger sendToServer if user hits enter or submits the form.
   //Remove whatever the user guessed from the dinosaur array.
   userGuessForm.addEventListener("keydown", (e) => {
@@ -124,7 +135,7 @@
   });
 
   //Autocomplete
-  let autocomplete = (inp, arr) => {
+  const autocomplete = (inp, arr) => {
     //currentFocus will keep track of which item in the list is in focus
     let currentFocus;
     //execute function on input

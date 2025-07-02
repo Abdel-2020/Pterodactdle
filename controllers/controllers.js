@@ -5,6 +5,7 @@ const {
 } = require("../logic/result");
 
 
+
 /*
  * DB Management/API Calls
  * Create Many
@@ -47,6 +48,7 @@ const createDino = async (req, res) => {
 
 //Read All
 const getAllDinos = async (req, res) => {
+  console.log(res);
   try {
     console.log(req.ip);
     const data = await Dino.find({}, {
@@ -182,9 +184,8 @@ const randomDoc = async (req, res) => {
       }, //OMITS THE ANNOYING _id and __v fields
     ]);
     dotd = randomDino[0];
-    //console.log(`(Inside randomDoc) ${JSON.stringify(dotd)}`);
-    //res.status(200).json({ msg: "Success!", data: randomDino[0] });
     return dotd;
+
   } catch (error) {
     res.status(500).json({
       msg: error.message
@@ -192,6 +193,7 @@ const randomDoc = async (req, res) => {
   }
 };
 
+//I don't like this solution
 //cron job to call function once per day.
 randomDoc();
 cron.schedule("0 0 * * *", () => {
@@ -206,10 +208,12 @@ const userGuess = async (req, res) => {
       __v: 0
     });
 
+   
+
+
     //Build out the HTML Row and returns a true/false if the guess is correct. 
     const answer = answerObj(userGuessDino, dotd);
-  
-    
+
     //Count attempts
     if(req.session.attempts) {
       req.session.attempts++;

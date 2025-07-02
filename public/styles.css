@@ -136,10 +136,12 @@ p {
   margin: auto;
 }
 
+/*
 .result-array {
   grid-column: 1/-1;
   display:contents;
 }
+*/
 .matrix-section{
   width: 600px;
   margin: auto;
