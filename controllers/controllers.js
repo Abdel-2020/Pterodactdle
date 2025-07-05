@@ -1,4 +1,5 @@
-const Dino = require("../models/dinos");
+const Dino = require("../models/dinos")
+const PlayerState = require("../models/playerState")
 const cron = require("node-cron");
 const {
   answerObj
@@ -18,17 +19,22 @@ const {
  */
 
 //Create Many
-/*const populateDB = async (req, res) => {
+const populateDB = async (req, res) => {
   const data = req.body;
   try {
     const dinos = await Dino.insertMany(data);
 
-    return res.status(200).json({ msg: "success", data: data });
+    return res.status(200).json({
+      msg: "success",
+      data: data
+    });
   } catch (error) {
-    return res.status(404).json({ msg: error.message });
+    return res.status(404).json({
+      msg: error.message
+    });
   }
 };
-*/
+
 
 //Create One
 const createDino = async (req, res) => {
@@ -157,6 +163,7 @@ const removeDino = async (req, res) => {
   }
 };
 
+
 /*
  * Guessing logic
  * randomDoc{} - Pulls random document from DB and stores it in dotd. Cron Job runs once a day.
@@ -167,6 +174,7 @@ const removeDino = async (req, res) => {
 
 let dotd = null;
 let userGuessDino = null;
+let dinoNum = 0;
 
 //Read One Random
 const randomDoc = async (req, res) => {
@@ -183,59 +191,93 @@ const randomDoc = async (req, res) => {
         }
       }, //OMITS THE ANNOYING _id and __v fields
     ]);
-    dotd = randomDino[0];
+
+    dinoNum++;
+    dotd = {
+      dino: randomDino[0],
+      dinoNum: dinoNum
+    };
     return dotd;
 
   } catch (error) {
     res.status(500).json({
-      msg: error.message
+      msg: error
     });
   }
 };
 
-//I don't like this solution
-//cron job to call function once per day.
+/*
+ *
+ * Cron Job
+ * Grabs a random dino from the DB at midnight.
+ * Resets users session. 
+ *
+ */
+
 randomDoc();
-cron.schedule("0 0 * * *", () => {
-  randomDoc();
+
+cron.schedule("* * * * *", async () => {
+  try {
+    await randomDoc();
+  } catch (error) {
+    console.log(error);
+  }
+
 });
 
 
+async function storePlayerState(playerSessionID, endGame, rows) {
+  try {
+    // Instantiate Player Document On First Guess
+    let timeStamp = new Date().toISOString().slice(0, 10); // "2025-06-25" 
+    return await PlayerState.findOneAndUpdate({
+      playerSessionID,
+      timeStamp
+    }, {
+      $setOnInsert: {
+        playerSessionID,
+        timeStamp,
+      },
+      $set: {
+        endGame: endGame
+      },
+      $inc: {
+        attempts: 1
+      },
+      $push: {
+        rows: rows
+      }
+    }, {
+      upsert: true,
+      new: true
+    });
+  } catch (error) {
+    console.log(error);
+    };
+  }
+
+let attempts = 0;
 const userGuess = async (req, res) => {
   try {
+    const sessionId = req.cookies.id;
+
     userGuessDino = await Dino.findOne(req.body, {
       _id: 0,
       __v: 0
     });
 
-   
-
-
-    //Build out the HTML Row and returns a true/false if the guess is correct. 
-    const answer = answerObj(userGuessDino, dotd);
-
-    //Count attempts
-    if(req.session.attempts) {
-      req.session.attempts++;
-      //console.log(req.session.attempts);
-    } else {
-      req.session.attempts = 1;
-    }
-
-    //Store the html row in session just in case user leaves webpage.
-     if (req.session.rows) {
-      req.session.rows = answer.html + req.session.rows
-    } else {
-      req.session.rows = answer.html;
-    }
-  
-
-    //Store a boolean value if the user has guessed correctly or not.
-    req.session.endGame = answer.correct;
- 
+    // Build out the HTML Row and returns a true/false if the guess is correct. 
+    const answer = answerObj(userGuessDino, dotd.dino);
     
-    //Send the html to the frontend to be rendered.
-    return res.status(200).json({html: answer.html, answer: answer.correct, attempts: req.session.attempts});
+    // Store player's session in DB
+    await storePlayerState(sessionId, answer.correct, answer.html);
+
+    // Send the html to the frontend to be rendered.
+    return res.status(200).json({
+      html: answer.html,
+      answer: answer.correct,
+      attempts: attempts++
+    });
 
   } catch (error) {
     res.status(500).json({
@@ -243,25 +285,6 @@ const userGuess = async (req, res) => {
     });
   }
 };
-
-
-/*
- * Send array of dinos for autocomplete list
- * 
- *  
- * 
- *
- * const getCleanArray = async (req, res) => {
-  try{
-    let dinos = await Dino.find().select("name -_id");
-    let cleanArray = dinos.map(dino => dino.name);
-    res.status(200).json(cleanArray);
-  } catch (error){
-    res.status(500).json({msg: error.message});
-  }
-}
-
- * */
 
 
 /*
@@ -274,23 +297,24 @@ const userGuess = async (req, res) => {
 
 
 
-const sessMgmt = async(req, res) => {
-  try{
-    //console.log(`sessMgt: ${JSON.stringify(req.session.endGame || false)}`)
-    res.status(200).json(
-    {endGame: req.session.endGame || false, html:req.session.rows, attempts: req.session.attempts});
+const sessMgmt = async (req, res) => {
+  try {
+    sessionID = req.cookies.id;
+
+    const playerSession = await PlayerState.find({
+    playerSessionID: sessionID}); 
+
+    res.status(200).json({rows: playerSession[0].rows, endGame: playerSession[0].endGame ?? false, attempts: playerSession[0].attempts ?? 0});
   } catch (error) {
     res.status(500).json({msg: error.message});
   }
- 
 }
-
-
 
 
 
 //Export to Routes
 module.exports = {
+  populateDB,
   getAllDinos,
   getDino,
   createDino,

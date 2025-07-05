@@ -1,25 +1,24 @@
-  //DOM Elements
+  // DOM Elements
   const resultsContainer = document.querySelector(".results-container");
   const userGuessForm = document.getElementById("userGuessForm");
   const submitBtn = document.getElementById("autocomplete-submit");
   const input = document.getElementById("autocomplete-input");
 
  
-  //Parse the HTML string 
+  // HMTL string to DOM node parser 
   function parseResponse(htmlString) {
     const parser = new DOMParser();
     const html = parser.parseFromString(htmlString, "text/html");
     return html;
   }
 
-  //Display string on browser
+  // Display string on browser
   function prependRow (container, html){
-    console.log(...html.getElementsByTagName('div'))
     container.prepend(...html.getElementsByTagName('div'));
 
   }
 
-  //update the html with end game msg
+  // Update the html with end game msg
   function endGame(guessCount) {
     let appSubtitle = document.getElementById("app-subtitle");
     input.setAttribute("type", "hidden");
@@ -33,8 +32,8 @@
     
   }
 
-  //Self explanatory
-  function sendToServer(string) {
+  // Self explanatory
+  function sendGuessToServer(string) {
     axios
       .post(
         "/api/v1/dinos/userGuess", {
@@ -55,18 +54,22 @@
       });
   }
 
-  //Retrieve session data if it exists
   window.addEventListener("DOMContentLoaded", () => {
     axios
-      .get("/api/v1/dinos/sess")
+      .get("/api/v1/dinos/session")
       .then((res) => {
-        console.log(JSON.stringify(res))
-        if (res.data.endGame) {
-          endGame(res.data.attempts);
-        }
-        if (res.data.html) {
-          prependRow(resultsContainer, parseResponse(res.data.html));
-        }
+          if(!res){
+            console.log("no session")
+          } else {
+            
+          }
+          for(let i = 0; i < res.data.rows.length; i++){
+            prependRow(resultsContainer, parseResponse(res.data.rows[i]));
+          }
+
+          if(res.data.endGame){
+              endGame(res.data.attempts);
+          }
 
       }, {
         withCredenitals: true
@@ -114,7 +117,7 @@
   userGuessForm.addEventListener("keydown", (e) => {
     if (e.code == "Enter") {
       if (input.value) {
-        sendToServer(input.value);
+        sendGuessToServer(input.value);
         dinosaurs = dinosaurs.filter((item) => item !== input.value);
         autocomplete(document.getElementById("autocomplete-input"), dinosaurs);
       }
@@ -127,7 +130,7 @@
   userGuessForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (input.value) {
-      sendToServer(input.value);
+      sendGuessToServer(input.value);
       dinosaurs = dinosaurs.filter((item) => item !== input.value);
       autocomplete(document.getElementById("autocomplete-input"), dinosaurs);
     }

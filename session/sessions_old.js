@@ -12,9 +12,7 @@ module.exports = session({
     path: "/", 
     httpOnly: true, 
     secure: false, 
-    //maxAge: (60000*60)*24, 
-    maxAge:60000
- 
+    maxAge: (60000*60)*24, 
   },
   
   //Saves a session to the store even if it hasn't been modified.

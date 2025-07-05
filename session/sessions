@@ -1,0 +1,25 @@
+const {
+    v4: uuidv4
+} = require('uuid');
+const sessionMiddleware = async (req, res, next) => {
+    try {
+        const sessionId = req.cookies.id;
+        if (!sessionId) {
+            sessiodId = uuidv4
+            res.cookie("id", sessionId, {
+                httpOnly: true,
+                sameSite: 'Strict'
+            });
+        }
+        req.sessionID = sessionId;
+        next();
+    } catch (error) {
+        res.status(500).json({
+            msg: error.message
+        });
+    }
+}
+
+module.exports = {
+    sessionMiddleware
+};

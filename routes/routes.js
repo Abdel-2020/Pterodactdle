@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const {
+  populateDB,
   getAllDinos,
   getDino,
   createDino,
   editDino,
   removeDino,
-  userGuess,
   sessMgmt,
+  userGuess,
 } = require("../controllers/controllers");
-
+router.route("/populate").post(populateDB)
 router.route("/").get(getAllDinos).post(createDino);
-router.route("/sess").get(sessMgmt)
 router.route("/userGuess").post(userGuess);
+router.route("/session").get(sessMgmt);
 router.route("/:id").get(getDino).patch(editDino).delete(removeDino);
 
 //Export Router to app.js
