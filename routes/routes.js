@@ -13,7 +13,7 @@ const {
 router.route("/populate").post(populateDB)
 router.route("/").get(getAllDinos).post(createDino);
 router.route("/userGuess").post(userGuess);
-router.route("/session").get(sessMgmt);
+router.route("/session").get(sessMgmt)
 router.route("/:id").get(getDino).patch(editDino).delete(removeDino);
 
 //Export Router to app.js

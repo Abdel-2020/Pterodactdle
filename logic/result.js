@@ -1,7 +1,8 @@
 const answerObj = (userGuessDino, dotd) => {
-  //Create the results matrix by comparing values between objects and assign a square.
+  // Create the results matrix by comparing values between objects and assign a square.
   let arr = [];
   let html = "";
+  let midnight = new Date();
 
   for (key in dotd) {
     if (dotd.hasOwnProperty(key)) {
@@ -16,7 +17,7 @@ const answerObj = (userGuessDino, dotd) => {
     }
   }
 
-  //Check if all values are correct (green-square)
+  // Check if all values are correct (green-square)
   function isCorrect (arr) {
     const isGreen = (elmnt) => elmnt.includes(`green-square`);
     if (arr){
@@ -24,6 +25,11 @@ const answerObj = (userGuessDino, dotd) => {
     }
   }
   
+  function countdown (timeAtCorrectGuess, midnight) {
+    
+  }
+
+
   //return object
   return {correct: isCorrect(arr), html:arr};
 

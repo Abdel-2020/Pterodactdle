@@ -18,7 +18,7 @@ const {
  * Delete One
  */
 
-//Create Many
+// Create Many
 const populateDB = async (req, res) => {
   const data = req.body;
   try {
@@ -36,7 +36,7 @@ const populateDB = async (req, res) => {
 };
 
 
-//Create One
+// Create One
 const createDino = async (req, res) => {
   try {
     const dino = await Dino.create(req.body);
@@ -52,11 +52,12 @@ const createDino = async (req, res) => {
   }
 };
 
-//Read All
+// Read All
 const getAllDinos = async (req, res) => {
-  console.log(res);
+ 
   try {
-    console.log(req.ip);
+    console.log('Client session ID:', req.sessionID);
+    // console.log(req.ip);
     const data = await Dino.find({}, {
       _id: 0,
       period: 0,
@@ -65,7 +66,7 @@ const getAllDinos = async (req, res) => {
       height: 0,
       weight: 0,
       __v: 0
-    }, ); //Second object passed to this function omits the _id and __v fields
+    }, ); // Second object passed to this function omits the _id and __v fields
     return res.status(200).json(data);
   } catch (error) {
     return res.status(404).json({
@@ -74,7 +75,7 @@ const getAllDinos = async (req, res) => {
   }
 };
 
-//Read One
+// Read One
 const getDino = async (req, res) => {
   try {
     //grab route parameter
@@ -82,10 +83,10 @@ const getDino = async (req, res) => {
       id
     } = req.params;
 
-    //search the DB
+    // search the DB
     const dino = await Dino.findById(id);
 
-    //check if dino exists
+    // check if dino exists
     if (!dino) {
       return res.status(404).json({
         msg: "Dinosaur not found"
@@ -105,14 +106,14 @@ const getDino = async (req, res) => {
   }
 };
 
-//Update One
+// Update One
 const editDino = async (req, res) => {
   try {
-    //grab route parameter
+    // Grab route parameter
     const {
       id
     } = req.params;
-    //grab request body
+    // Grab request body
     const data = req.body;
 
     const dino = await Dino.findByIdAndUpdate(id, data, {
@@ -120,7 +121,7 @@ const editDino = async (req, res) => {
       runValidators: true,
     });
 
-    //check if dino exists
+    // Check if dino exists
     if (!dino) {
       return res.status(404).json({
         msg: "Dinosaur not found"
@@ -140,7 +141,7 @@ const editDino = async (req, res) => {
   }
 };
 
-//Delete One
+// Delete One
 const removeDino = async (req, res) => {
   try {
     const {
@@ -176,7 +177,7 @@ let dotd = null;
 let userGuessDino = null;
 let dinoNum = 0;
 
-//Read One Random
+// Read One Random
 const randomDoc = async (req, res) => {
   try {
     const randomDino = await Dino.aggregate([{
@@ -189,7 +190,7 @@ const randomDoc = async (req, res) => {
           _id: 0,
           __v: 0
         }
-      }, //OMITS THE ANNOYING _id and __v fields
+      }, // OMITS THE ANNOYING _id and __v fields
     ]);
 
     dinoNum++;
@@ -206,25 +207,41 @@ const randomDoc = async (req, res) => {
   }
 };
 
+
+
+async function resetSession () {
+  try {
+   await PlayerState.updateMany({}, {attempts: 0, endGame: false, rows:[]}, {});
+    console.log();
+  } catch (error) {
+    console.log(error.message)
+  }
+
+}
+
+
+
 /*
  *
  * Cron Job
- * Grabs a random dino from the DB at midnight.
- * Resets users session. 
+ *  Resets users session. 
+ *  Grabs a random dino from the DB at midnight.
+ * 
  *
  */
 
 randomDoc();
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   try {
+    await resetSession();
     await randomDoc();
+    console.log("Game has reset")
   } catch (error) {
     console.log(error);
   }
 
 });
-
 
 async function storePlayerState(playerSessionID, endGame, rows) {
   try {
@@ -253,13 +270,13 @@ async function storePlayerState(playerSessionID, endGame, rows) {
     });
   } catch (error) {
     console.log(error);
-    };
-  }
+  };
+}
 
-let attempts = 0;
 const userGuess = async (req, res) => {
   try {
-    const sessionId = req.cookies.id;
+    const sessionId =  req.sessionID;
+    console.log(sessionId)
 
     userGuessDino = await Dino.findOne(req.body, {
       _id: 0,
@@ -268,15 +285,15 @@ const userGuess = async (req, res) => {
 
     // Build out the HTML Row and returns a true/false if the guess is correct. 
     const answer = answerObj(userGuessDino, dotd.dino);
-    
+
     // Store player's session in DB
-    await storePlayerState(sessionId, answer.correct, answer.html);
+     let playerState = await storePlayerState(sessionId, answer.correct, answer.html);
 
     // Send the html to the frontend to be rendered.
     return res.status(200).json({
       html: answer.html,
-      answer: answer.correct,
-      attempts: attempts++
+      answer: playerState.endGame,
+      attempts: playerState.attempts
     });
 
   } catch (error) {
@@ -299,20 +316,25 @@ const userGuess = async (req, res) => {
 
 const sessMgmt = async (req, res) => {
   try {
-    sessionID = req.cookies.id;
-
+    let sessionID = req.sessionID
+    console.log('Client session ID:', sessionID);
     const playerSession = await PlayerState.find({
-    playerSessionID: sessionID}); 
-
-    res.status(200).json({rows: playerSession[0].rows, endGame: playerSession[0].endGame ?? false, attempts: playerSession[0].attempts ?? 0});
-  } catch (error) {
-    res.status(500).json({msg: error.message});
+      playerSessionID: sessionID
+    });
+      res.status(200).json({
+      rows: playerSession[0].rows,
+      endGame: playerSession[0].endGame,
+      attempts: playerSession[0].attempts
+    });
+    } catch (error) {
+    res.status(500).json({
+      msg: error.message});
   }
 }
 
 
 
-//Export to Routes
+// Export to Routes
 module.exports = {
   populateDB,
   getAllDinos,

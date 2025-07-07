@@ -4,7 +4,7 @@
   const submitBtn = document.getElementById("autocomplete-submit");
   const input = document.getElementById("autocomplete-input");
 
- 
+
   // HMTL string to DOM node parser 
   function parseResponse(htmlString) {
     const parser = new DOMParser();
@@ -13,7 +13,7 @@
   }
 
   // Display string on browser
-  function prependRow (container, html){
+  function prependRow(container, html) {
     container.prepend(...html.getElementsByTagName('div'));
 
   }
@@ -24,30 +24,25 @@
     input.setAttribute("type", "hidden");
     submitBtn.setAttribute("type", "hidden");
 
-    if(guessCount > 1) {
-    appSubtitle.innerText = `Well Done! It took you ${guessCount} guesses!\n Try again Tomorrow.`;
+    if (guessCount > 1) {
+      appSubtitle.innerText = `Well Done! It took you ${guessCount} guesses!\n Try again Tomorrow.`;
     } else {
-    appSubtitle.innerText = `Well Done! It took you ${guessCount} guess!\n Try again Tomorrow.`;
+      appSubtitle.innerText = `Well Done! It took you ${guessCount} guess!\n Try again Tomorrow.`;
     }
-    
+
   }
 
   // Self explanatory
   function sendGuessToServer(string) {
     axios
       .post(
-        "/api/v1/dinos/userGuess", {
-          name: string,
-        }, {
-          withCredentials: true
-        },
+        "/api/v1/dinos/userGuess", { name: string }, { withCredentials: true },
       )
       .then((res) => {
         prependRow(resultsContainer, parseResponse(res.data.html));
         if (res.data.answer) {
           endGame(res.data.attempts);
         }
-        
       })
       .catch((error) => {
         console.log(error);
@@ -56,24 +51,18 @@
 
   window.addEventListener("DOMContentLoaded", () => {
     axios
-      .get("/api/v1/dinos/session")
+      .get("api/v1/dinos/session", { withCredentials: true })
       .then((res) => {
-          if(!res){
-            console.log("no session")
-          } else {
-            
-          }
-          for(let i = 0; i < res.data.rows.length; i++){
-            prependRow(resultsContainer, parseResponse(res.data.rows[i]));
-          }
+        console.log(res.data);
+        for (let i = 0; i < res.data.rows.length; i++) {
+          prependRow(resultsContainer, parseResponse(res.data.rows[i]));
+        }
 
-          if(res.data.endGame){
-              endGame(res.data.attempts);
-          }
+        if (res.data.endGame) {
+          endGame(res.data.attempts);
+        }
 
-      }, {
-        withCredenitals: true
-      }, )
+      })
       .catch((error) => {
         console.log(error)
       })
