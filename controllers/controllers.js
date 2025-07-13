@@ -231,13 +231,13 @@ async function resetSession() {
  *
  */
 
-randomDoc();
+await randomDoc(req, res);
 resetSession();
 
 cron.schedule("0 0 * * *", async () => {
   try {
     await resetSession();
-    await randomDoc();
+    await randomDoc(req, res);
   } catch (error) {
    return error.message;
   }
