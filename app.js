@@ -38,9 +38,7 @@ const start = async () => {
 
 // Routes
 // Any requests to the below paths, will be handled by the router
-
 app.use("/api/v1/dinos", dinos);
-//app.get("/", ()=>{console.log('Client session ID:', req.sessionID);})
 
 
 start();
