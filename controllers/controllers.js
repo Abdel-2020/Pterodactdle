@@ -199,7 +199,7 @@ const randomDoc = async () => {
 
   } catch (error) {
     return error.message;
-    });
+
   }
 };
 
