@@ -175,7 +175,7 @@ let userGuessDino = null;
 let dinoNum = 0;
 
 // Read One Random
-const randomDoc = async (req, res) => {
+const randomDoc = async () => {
   try {
     const randomDino = await Dino.aggregate([{
         $sample: {
@@ -198,8 +198,7 @@ const randomDoc = async (req, res) => {
     return dotd;
 
   } catch (error) {
-    res.status(500).json({
-      msg: error
+    return error.message;
     });
   }
 };
@@ -231,7 +230,7 @@ async function resetSession() {
  *
  */
 
-randomDoc(req, res);
+randomDoc();
 resetSession();
 
 cron.schedule("0 0 * * *", async () => {
