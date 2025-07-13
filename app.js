@@ -44,3 +44,5 @@ app.use("/api/v1/dinos", dinos);
 
 
 start();
+
+module.exports = app;
