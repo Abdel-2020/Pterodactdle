@@ -10,11 +10,9 @@ function parseResponse(htmlString) {
   return html;
 }
 
-
 function prependRow(container, html) {
   container.prepend(...html.getElementsByTagName('div'));
 }
-
 
 function sendGuessToServer(string) {
   axios

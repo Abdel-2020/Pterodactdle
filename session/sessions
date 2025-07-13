@@ -10,7 +10,7 @@ const sessionMiddleware = (req, res, next) => {
             res.cookie("id", sessionId, {
                 signed: true,
                 httpOnly: true,
-                sameSite: 'Lax',
+                sameSite: 'Strict',
                 maxAge: 24 * 60 * 60 * 1000 //1 day
             });
         }

@@ -12,13 +12,6 @@ const PlayerStateSchema = new mongoose.Schema({
     default: false,
     },
 
-    timeStamp:{
-        date: {
-            type: String,
-            default: "Date.now"
-        }
-    },
-
     attempts: {
         type: Number, 
         default: 0,
