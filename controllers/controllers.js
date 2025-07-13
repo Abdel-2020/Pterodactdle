@@ -231,7 +231,7 @@ async function resetSession() {
  *
  */
 
-await randomDoc(req, res);
+randomDoc(req, res);
 resetSession();
 
 cron.schedule("0 0 * * *", async () => {
