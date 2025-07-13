@@ -1,18 +1,9 @@
-const resultsContainer = document.querySelector(".results-container");
 const userGuessForm = document.getElementById("userGuessForm");
-const submitBtn = document.getElementById("autocomplete-submit");
 const input = document.getElementById("autocomplete-input");
+const submitBtn = document.getElementById("autocomplete-submit");
+
+const resultsContainer = document.querySelector(".results-container");
 const timer = document.createElement("h2");
-
-function parseResponse(htmlString) {
-  const parser = new DOMParser();
-  const html = parser.parseFromString(htmlString, "text/html");
-  return html;
-}
-
-function prependRow(container, html) {
-  container.prepend(...html.getElementsByTagName('div'));
-}
 
 function sendGuessToServer(string) {
   axios
@@ -30,9 +21,21 @@ function sendGuessToServer(string) {
       }
     })
     .catch((error) => {
-      console.log(error);
+      return error.message;
     });
 }
+
+function parseResponse(htmlString) {
+  const parser = new DOMParser();
+  const html = parser.parseFromString(htmlString, "text/html");
+  return html;
+}
+
+function prependRow(container, html) {
+  container.prepend(...html.getElementsByTagName('div'));
+}
+
+
 
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
@@ -55,8 +58,6 @@ function endGame(attemptCount, nextRound) {
   }, 1000)
 
   appSubtitle.append(timer);
-
-
 }
 
 
@@ -85,7 +86,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     })
     .catch((error) => {
-      console.log(error)
+      return error.message;
     })
 })
 
@@ -120,54 +121,6 @@ let dinosaurs = [
   "Corythosaurus",
   "Maiasaura",
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //Trigger sendToServer if user hits enter or submits the form.
 //Remove whatever the user guessed from the dinosaur array.
@@ -277,8 +230,6 @@ const autocomplete = (inp, arr) => {
     }
     //start by removing active class on all items.
     removeActive(item);
-    //console.log(`currentFocus: ${currentFocus}`)
-    //console.log(`Item.length: ${item.length}`)
     if (currentFocus >= item.length) {
       currentFocus = 0;
     }

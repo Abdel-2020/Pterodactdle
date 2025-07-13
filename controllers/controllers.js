@@ -40,7 +40,6 @@ const populateDB = async (req, res) => {
 const createDino = async (req, res) => {
   try {
     const dino = await Dino.create(req.body);
-    console.log(req.body);
     return res.status(200).json({
       msg: "Success!",
       data: dino
@@ -56,8 +55,6 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
 
   try {
-    console.log('Client session ID:', req.sessionID);
-    // console.log(req.ip);
     const data = await Dino.find({}, {
       _id: 0,
       period: 0,
@@ -216,9 +213,9 @@ async function resetSession() {
       endGame: false,
       rows: []
     }, {});
-    console.log();
+
   } catch (error) {
-    console.log(error.message)
+    return error.message;
   }
 
 }
@@ -241,9 +238,8 @@ cron.schedule("0 0 * * *", async () => {
   try {
     await resetSession();
     await randomDoc();
-    console.log("Game has reset")
   } catch (error) {
-    console.log(error);
+   return error.message;
   }
 
 });
@@ -272,7 +268,7 @@ async function storePlayerState(playerSessionID, endGame, rows, ) {
       new: true
     });
   } catch (error) {
-    console.log(error);
+    return error.message
   };
 }
 
@@ -287,9 +283,6 @@ async function storePlayerState(playerSessionID, endGame, rows, ) {
 
 const userGuess = async (req, res) => {
   try {
-    console.log(req)
-    console.log('Signed cookie id:', req.signedCookies.id);
-
     userGuessDino = await Dino.findOne(req.body, {
       _id: 0,
       __v: 0

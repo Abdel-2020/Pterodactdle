@@ -1,5 +1,5 @@
 {
-  "name": "jurassicdle",
+  "name": "Pterodactdle",
   "version": "1.0.0",
   "description": "Wordle style game with Dinos!",
   "license": "ISC",
@@ -7,7 +7,9 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "build": "echo 'No build step needed'"
   },
   "dependencies": {
     "connect-mongo": "^5.1.0",
@@ -20,6 +22,6 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.10"
   }
 }
