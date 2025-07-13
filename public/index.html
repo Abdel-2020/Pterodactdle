@@ -1,62 +1,47 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pterodactdle!</title>
-    
-    <!--Stylesheet-->
-    <link rel="stylesheet" href="./normalize.css" />
-    <link rel="stylesheet" href="./styles.css" />
 
-  </head>
-  <body>
-    <h1 class="app-title">Pterodactdle</h1>
- 
-    <main>
-        <section class="app-body">
-        <h2 id="app-subtitle">Guess today's dinosaur!</h2>
-        <form id="userGuessForm" autocomplete="off">
-          <div class="autocomplete">
-            <input
-              id="autocomplete-input"
-              type="text"
-              name="userGuess"
-              placeholder="Guess a Dinosaur!"
-            />
-          </div>
-          <input id="autocomplete-submit" type="submit" />
-        </form>
-      </section>
-      <section class="results-container-header">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pterodactdle!</title>
+
+  <!--Stylesheet-->
+  <link rel="stylesheet" href="./normalize.css" />
+  <link rel="stylesheet" href="./styles.css" />
+
+</head>
+
+<body>
+  <h1 class="app-title"><a href="#">Pterodactdle</a></h1>
+
+  <main>
+    <section class="app-body">
+      <h2 id="app-subtitle">Guess today's dinosaur!</h2>
+      <form id="userGuessForm" autocomplete="off">
+        <div class="autocomplete">
+          <input id="autocomplete-input" type="text" name="userGuess" placeholder="Guess a Dinosaur!" />
+        </div>
+        <input id="autocomplete-submit" type="submit" />
+      </form>
+    </section>
+    <section class="results-container-header">
       <h3>Name</h3>
       <h3>Period</h3>
       <h3>Diet</h3>
       <h3>Clade</h3>
-      <h3>Height</h3>
-      <h3>Weight</h3>
-      </section>
+      <h3>Height (m)</h3>
+      <h3>Weight (kg)</h3>
+    </section>
 
-      <section class="results-container">
-   
-      </section>
-  <!--  
-      <section class="matrix-section">
-        <h3>Color Indicators</h3>
-        <section class="matrix">
-          <div class="square amber-square"><img class="up-arrow" src="./images/arrow-svgrepo-com.svg" alt=""></div><p>Partially Correct Attribute (Answer is higher)</p>
-          <div class="square amber-square"><img class="down-arrow" src="./images/arrow-svgrepo-com.svg" alt=""></div><p>Partially Correct Attribute (Answer is lower)</p>
-          <div class="square red-square"></div><p>Incorrect Attribute</p>
-          <div class="square green-square"></div><p>Correct Attribute</p>
-        </section>
-      </section>
-  -->
+    <section class="results-container">
 
-    
-    </main>
-    
-    <!--Scripts-->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="./index.js"></script>
-  </body>
+    </section>
+  </main>
+
+  <!--Scripts-->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./index.js"></script>
+</body>
+
 </html>

@@ -9,13 +9,13 @@ const {
 
 /*
  * DB Management/API Calls
- * Create Many
- * Create One
- * Read All
- * Read One
- * Read One Random
- * Update One
- * Delete One
+ *  Create Many
+ *  Create One
+ *  Read All
+ *  Read One
+ *  Read One Random
+ *  Update One
+ *  Delete One
  */
 
 // Create Many
@@ -54,7 +54,7 @@ const createDino = async (req, res) => {
 
 // Read All
 const getAllDinos = async (req, res) => {
- 
+
   try {
     console.log('Client session ID:', req.sessionID);
     // console.log(req.ip);
@@ -167,9 +167,9 @@ const removeDino = async (req, res) => {
 
 /*
  * Guessing logic
- * randomDoc{} - Pulls random document from DB and stores it in dotd. Cron Job runs once a day.
- * userGuess{} - Uses the clients input to retrieve a dinosaur from the DB and stores it in userGuessDino
- * result{}    - Compare both objects and return an answer object (see below)
+ *  randomDoc{} - Pulls random document from DB and stores it in dotd. Cron Job runs once a day.
+ *  userGuess{} - Uses the clients input to retrieve a dinosaur from the DB and stores it in userGuessDino
+ *  result{}    - Compare both objects and return an answer object (see below)
  *
  * */
 
@@ -209,9 +209,13 @@ const randomDoc = async (req, res) => {
 
 
 
-async function resetSession () {
+async function resetSession() {
   try {
-   await PlayerState.updateMany({}, {attempts: 0, endGame: false, rows:[]}, {});
+    await PlayerState.updateMany({}, {
+      attempts: 0,
+      endGame: false,
+      rows: []
+    }, {});
     console.log();
   } catch (error) {
     console.log(error.message)
@@ -231,6 +235,7 @@ async function resetSession () {
  */
 
 randomDoc();
+resetSession();
 
 cron.schedule("0 0 * * *", async () => {
   try {
@@ -243,17 +248,15 @@ cron.schedule("0 0 * * *", async () => {
 
 });
 
-async function storePlayerState(playerSessionID, endGame, rows) {
+async function storePlayerState(playerSessionID, endGame, rows, ) {
   try {
     // Instantiate Player Document On First Guess
-    let timeStamp = new Date().toISOString().slice(0, 10); // "2025-06-25" 
+
     return await PlayerState.findOneAndUpdate({
       playerSessionID,
-      timeStamp
     }, {
       $setOnInsert: {
         playerSessionID,
-        timeStamp,
       },
       $set: {
         endGame: endGame
@@ -273,27 +276,35 @@ async function storePlayerState(playerSessionID, endGame, rows) {
   };
 }
 
+   function timeLeft () {
+      let now = new Date();
+      const midnight = new Date();
+      midnight.setHours(0, 0, 0, 0)
+      midnight.setDate(midnight.getDate() + 1)
+      let remainingTime =  midnight - now;
+      return remainingTime;
+    }
+
 const userGuess = async (req, res) => {
   try {
-    const sessionId =  req.sessionID;
-    console.log(sessionId)
-
+    console.log(req)
     userGuessDino = await Dino.findOne(req.body, {
       _id: 0,
       __v: 0
     });
 
-    // Build out the HTML Row and returns a true/false if the guess is correct. 
     const answer = answerObj(userGuessDino, dotd.dino);
+    const sessionId = req.sessionID;
+    const playerState = await storePlayerState(sessionId, answer.correct, answer.html);
 
-    // Store player's session in DB
-     let playerState = await storePlayerState(sessionId, answer.correct, answer.html);
+ 
 
-    // Send the html to the frontend to be rendered.
+
     return res.status(200).json({
       html: answer.html,
-      answer: playerState.endGame,
-      attempts: playerState.attempts
+      answer: answer.correct,
+      attempts: playerState.attempts,
+      nextRound:timeLeft()
     });
 
   } catch (error) {
@@ -316,19 +327,21 @@ const userGuess = async (req, res) => {
 
 const sessMgmt = async (req, res) => {
   try {
-    let sessionID = req.sessionID
-    console.log('Client session ID:', sessionID);
+    const sessionID = req.sessionID
     const playerSession = await PlayerState.find({
       playerSessionID: sessionID
     });
-      res.status(200).json({
+
+    res.status(200).json({
       rows: playerSession[0].rows,
       endGame: playerSession[0].endGame,
-      attempts: playerSession[0].attempts
+      attempts: playerSession[0].attempts,
+      nextRound:timeLeft()
     });
-    } catch (error) {
+  } catch (error) {
     res.status(500).json({
-      msg: error.message});
+      msg: error.message
+    });
   }
 }
 
