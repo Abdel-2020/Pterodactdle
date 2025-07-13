@@ -288,6 +288,8 @@ async function storePlayerState(playerSessionID, endGame, rows, ) {
 const userGuess = async (req, res) => {
   try {
     console.log(req)
+    console.log('Signed cookie id:', req.signedCookies.id);
+
     userGuessDino = await Dino.findOne(req.body, {
       _id: 0,
       __v: 0

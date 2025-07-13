@@ -5,8 +5,9 @@ const app = express();
 const port = 5050;
 
 // Manage Cookies/Sessions
-const {sessionMiddleware} = require("./session/sessions");
 const cookieParser = require('cookie-parser');
+app.use(cookieParser(process.env.SECRET));
+const {sessionMiddleware} = require("./session/sessions");
 // express router
 const dinos = require("./routes/routes");
 
@@ -14,10 +15,10 @@ const dinos = require("./routes/routes");
 const connectDB = require("./db/connect");
 
 // Middleware 
-app.use(cookieParser());
-app.use(sessionMiddleware);
 app.use(express.json());
 app.use(express.static("./public"));
+app.use(sessionMiddleware);
+
 
 
 
