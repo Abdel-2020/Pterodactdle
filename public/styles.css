@@ -127,8 +127,6 @@ p {
   margin: 60px auto ;
 }
 
-
-
   .app-title {
   text-align: center;
   margin: 0 auto;
@@ -176,7 +174,7 @@ p {
 
 
 .square > p {
-  font-size: 12px;
+  font-size: 8px;
   color: white;
   -webkit-text-stroke: 4px black;
     paint-order: stroke fill;
