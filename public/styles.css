@@ -107,8 +107,6 @@ p {
 }
 
 main{
-  min-width: 315px;
-  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -198,4 +196,9 @@ main{
 }
 
 
+@media only screen and (max-width: 480px) {
+.results-container{
+overflow-x:auto;
+}
 
+}
