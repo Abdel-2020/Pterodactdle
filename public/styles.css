@@ -27,11 +27,6 @@
   border: 3px solid darkgreen;
 }
 
-
-
-
-
-
 /****************Autocomplete*************************/
 .autocomplete {
   position: relative;
@@ -91,11 +86,7 @@ input {
   color: #ffffff; 
 }
 
-
-
-@media only screen and (min-width: 320px) {
-
-body {
+  body {
   margin: 90px auto;
   display: flex;
   flex-direction: column;
@@ -115,6 +106,14 @@ p {
   font-family: 'lato';
 }
 
+main{
+  min-width: 315px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+
+
 .app-body {
   display: flex;
   flex-direction: column;
@@ -123,7 +122,6 @@ p {
 }
 
 #app-subtitle {
-  width: 320px;
   margin: 60px auto ;
 }
 
@@ -132,7 +130,6 @@ p {
   margin: 0 auto;
   font-size: 3em;
   font-weight: 500;
-  width: 320px;
 }
 
 .results-container{
@@ -141,44 +138,41 @@ p {
   grid-template-rows:auto;
   justify-items: center;
   margin: auto;
-  max-width: 315px;
 }
-
 
   .results-container-header{
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows:auto;
   justify-items:center;
-  width: 315px;
   margin: auto;
 }
 
  .results-container-header > h3{
-  font-size: 14px;
+  font-size: 18px;
+  padding: 2px;
+  text-align: center;
  } 
 
 
 .square {
-  width: 2em;
-  height: 2em;
-  padding: 2px;
-  margin: 8px;
+  width: 4em;
+  height: 4em;
+  margin: 10px 6px;
   border-radius: 8px;
   word-break: break-all;
   text-align: center;
 }
 
 
-
-
-
 .square > p {
-  font-size: 8px;
+  font-size: 18px;
+  text-align: center;
   color: white;
   -webkit-text-stroke: 4px black;
-    paint-order: stroke fill;
+  paint-order: stroke fill;
   position:relative;
+  bottom:9px;
   z-index: 3;
 }
 
@@ -188,8 +182,8 @@ p {
   bottom: -3px;
   z-index: 2;
   transform: rotate(-0.50turn);
-  width: 2em;
-  height: 2em;
+  width: 4em;
+  height: 4em;
 
 }
 
@@ -199,11 +193,9 @@ p {
   bottom: -3px;
   z-index: 2;
   transform: rotate(1turn);
-  width: 2em;
-  height: 2em;
+  width: 4em;
+  height: 4em;
 }
 
 
 
-
-}
