@@ -1,4 +1,4 @@
-const answerObj = (userGuessDino, dotd) => {
+const getResult = (userGuessDino, dotd) => {
   // Create the results matrix by comparing values between objects and assign a square.
   let arr = [];
   let html = "";
@@ -37,5 +37,5 @@ const answerObj = (userGuessDino, dotd) => {
 
 
 module.exports = {
-  answerObj,
+  getResult,
 };

@@ -130,6 +130,15 @@ main{
   font-weight: 500;
 }
 
+
+  .results-container-header{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows:auto;
+  justify-items:center;
+  margin: 200px auto 0;
+}
+
 .results-container{
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -138,19 +147,7 @@ main{
   margin: auto;
 }
 
-  .results-container-header{
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows:auto;
-  justify-items:center;
-  margin: auto;
-}
 
- .results-container-header > h3{
-  font-size: 18px;
-  padding: 2px;
-  text-align: center;
- } 
 
 
 .square {

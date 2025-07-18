@@ -12,7 +12,7 @@ const PlayerStateSchema = new mongoose.Schema({
     default: false,
     },
 
-    attempts: {
+    numberOfAttempts: {
         type: Number, 
         default: 0,
     },
@@ -20,6 +20,10 @@ const PlayerStateSchema = new mongoose.Schema({
     rows: {
         type:[], default: []
     },
+
+     guesses:{
+    type:[], default: []
+    }
     
 })
 

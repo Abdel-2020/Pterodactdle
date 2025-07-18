@@ -2,7 +2,7 @@ const Dino = require("../models/dinos")
 const PlayerState = require("../models/playerState")
 const cron = require("node-cron");
 const {
-  answerObj
+  getResult
 } = require("../logic/result");
 
 
@@ -55,16 +55,25 @@ const createDino = async (req, res) => {
 const getAllDinos = async (req, res) => {
 
   try {
-    const data = await Dino.find({}, {
+    const dinosaurList = await Dino.find({}, {
       _id: 0,
       period: 0,
       diet: 0,
       clade: 0,
       height: 0,
       weight: 0,
-      __v: 0
-    }, ); // Second object passed to this function omits the _id and __v fields
-    return res.status(200).json(data);
+      __v: 0,
+    }, ).lean(); // Second object passed to this function omits the fields
+
+    const data= [];
+    for(let i = 0; i < dinosaurList.length; i++){
+      data[i] = dinosaurList[i].name;
+    }
+
+   
+    return res.status(200).json({
+      data
+    });
   } catch (error) {
     return res.status(404).json({
       msg: error
@@ -208,9 +217,10 @@ const randomDoc = async () => {
 async function resetSession() {
   try {
     await PlayerState.updateMany({}, {
-      attempts: 0,
+      numberOfAttempts: 0,
       endGame: false,
-      rows: []
+      rows: [],
+      guesses: []
     }, {});
 
   } catch (error) {
@@ -238,12 +248,12 @@ cron.schedule("0 0 * * *", async () => {
     await resetSession();
     await randomDoc(req, res);
   } catch (error) {
-   return error.message;
+    return error.message;
   }
 
 });
 
-async function storePlayerState(playerSessionID, endGame, rows, ) {
+async function storePlayerState(playerSessionID, endGame, rows, guesses) {
   try {
     // Instantiate Player Document On First Guess
 
@@ -254,31 +264,33 @@ async function storePlayerState(playerSessionID, endGame, rows, ) {
         playerSessionID,
       },
       $set: {
-        endGame: endGame
+        endGame: endGame,
+        
       },
       $inc: {
-        attempts: 1
+        numberOfAttempts: 1
       },
       $push: {
-        rows: rows
+        rows: rows,
+        guesses: guesses
       }
     }, {
       upsert: true,
       new: true
     });
   } catch (error) {
-    return error.message
+    return res.status(500).json(error.message)
   };
 }
 
-   function timeLeft () {
-      let now = new Date();
-      const midnight = new Date();
-      midnight.setHours(0, 0, 0, 0)
-      midnight.setDate(midnight.getDate() + 1)
-      let remainingTime =  midnight - now;
-      return remainingTime;
-    }
+function timeLeft() {
+  let now = new Date();
+  const midnight = new Date();
+  midnight.setHours(0, 0, 0, 0)
+  midnight.setDate(midnight.getDate() + 1)
+  let remainingTime = midnight - now;
+  return remainingTime;
+}
 
 const userGuess = async (req, res) => {
   try {
@@ -286,19 +298,17 @@ const userGuess = async (req, res) => {
       _id: 0,
       __v: 0
     });
-
-    const answer = answerObj(userGuessDino, dotd.dino);
+   
+    const answer = getResult(userGuessDino, dotd.dino);
     const sessionId = req.sessionID;
-    const playerState = await storePlayerState(sessionId, answer.correct, answer.html);
-
- 
+    const playerState = await storePlayerState(sessionId, answer.correct, answer.html, userGuessDino.name);
 
 
     return res.status(200).json({
       html: answer.html,
       answer: answer.correct,
-      attempts: playerState.attempts,
-      nextRound:timeLeft()
+      attempts: playerState.numberOfAttempts,
+      nextRound: timeLeft()
     });
 
   } catch (error) {
@@ -329,8 +339,9 @@ const sessMgmt = async (req, res) => {
     res.status(200).json({
       rows: playerSession[0].rows,
       endGame: playerSession[0].endGame,
-      attempts: playerSession[0].attempts,
-      nextRound:timeLeft()
+      attempts: playerSession[0].numberOfAttempts,
+      guesses: playerSession[0].guesses,
+      nextRound: timeLeft()
     });
   } catch (error) {
     res.status(500).json({
