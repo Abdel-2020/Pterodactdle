@@ -1,10 +1,10 @@
-const Dino = require("../models/dinos")
-const PlayerState = require("../models/playerState")
+const Dino = require("../../models/dinos")
+const PlayerState = require("../../models/playerState")
 const cron = require("node-cron");
-const {
-  getResult
-} = require("../logic/result");
-
+const {timeLeft} = require("../../logic/countdown")
+const services = require("../../services/services");
+const sessionServices = require("../../services/sessionService");
+const { json } = require("express");
 
 
 /*
@@ -63,7 +63,7 @@ const getAllDinos = async (req, res) => {
       height: 0,
       weight: 0,
       __v: 0,
-    }, ).lean(); // Second object passed to this function omits the fields
+    }, ).lean(); // Second object passed to this function turns the response from a mongoose object to JSON. 
 
     const data= [];
     for(let i = 0; i < dinosaurList.length; i++){
@@ -181,7 +181,7 @@ const removeDino = async (req, res) => {
 
 let dotd = null;
 let userGuessDino = null;
-let dinoNum = 0;
+
 
 // Read One Random
 const randomDoc = async () => {
@@ -199,10 +199,9 @@ const randomDoc = async () => {
       }, // OMITS THE ANNOYING _id and __v fields
     ]);
 
-    dinoNum++;
+  
     dotd = {
       dino: randomDino[0],
-      dinoNum: dinoNum
     };
     return dotd;
 
@@ -213,22 +212,36 @@ const randomDoc = async () => {
 };
 
 
-
-async function resetSession() {
+const userGuess = async (req, res) => {
   try {
-    await PlayerState.updateMany({}, {
-      numberOfAttempts: 0,
-      endGame: false,
-      rows: [],
-      guesses: []
-    }, {});
+    userGuessDino = await Dino.findOne(req.body, {
+      _id: 0,
+      __v: 0
+    });
+   
+  
+    const answer= await  services.handleGuess(userGuessDino,dotd.dino);
+
+ 
+    let playerState = await sessionServices.storePlayerState(
+      req.sessionID, 
+      answer.correct, 
+      answer.html, 
+      userGuessDino.name);
+    
+  return res.status(200).json({
+      html: answer.html,
+      answer: answer.correct,
+      attempts: playerState.numberOfAttempts,
+      nextRound: await services.getTime()
+    });
 
   } catch (error) {
-    return error.message;
+    res.status(500).json({
+      msg: error
+    });
   }
-
-}
-
+};
 
 
 /*
@@ -241,82 +254,16 @@ async function resetSession() {
  */
 
 randomDoc();
-resetSession();
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("0 0 * * *",  async () => {
   try {
-    await resetSession();
-    await randomDoc(req, res);
+    await services.resetSession();
+    await randomDoc();
   } catch (error) {
     return error.message;
   }
 
 });
-
-async function storePlayerState(playerSessionID, endGame, rows, guesses) {
-  try {
-    // Instantiate Player Document On First Guess
-
-    return await PlayerState.findOneAndUpdate({
-      playerSessionID,
-    }, {
-      $setOnInsert: {
-        playerSessionID,
-      },
-      $set: {
-        endGame: endGame,
-        
-      },
-      $inc: {
-        numberOfAttempts: 1
-      },
-      $push: {
-        rows: rows,
-        guesses: guesses
-      }
-    }, {
-      upsert: true,
-      new: true
-    });
-  } catch (error) {
-    return res.status(500).json(error.message)
-  };
-}
-
-function timeLeft() {
-  let now = new Date();
-  const midnight = new Date();
-  midnight.setHours(0, 0, 0, 0)
-  midnight.setDate(midnight.getDate() + 1)
-  let remainingTime = midnight - now;
-  return remainingTime;
-}
-
-const userGuess = async (req, res) => {
-  try {
-    userGuessDino = await Dino.findOne(req.body, {
-      _id: 0,
-      __v: 0
-    });
-   
-    const answer = getResult(userGuessDino, dotd.dino);
-    const sessionId = req.sessionID;
-    const playerState = await storePlayerState(sessionId, answer.correct, answer.html, userGuessDino.name);
-
-
-    return res.status(200).json({
-      html: answer.html,
-      answer: answer.correct,
-      attempts: playerState.numberOfAttempts,
-      nextRound: timeLeft()
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      msg: error.message
-    });
-  }
-};
 
 
 /*
@@ -329,20 +276,10 @@ const userGuess = async (req, res) => {
 
 
 
-const sessMgmt = async (req, res) => {
+const manageSession = async (req, res) => {
   try {
-    const sessionID = req.sessionID
-    const playerSession = await PlayerState.find({
-      playerSessionID: sessionID
-    });
-
-    res.status(200).json({
-      rows: playerSession[0].rows,
-      endGame: playerSession[0].endGame,
-      attempts: playerSession[0].numberOfAttempts,
-      guesses: playerSession[0].guesses,
-      nextRound: timeLeft()
-    });
+    let data = await sessionServices.getPlayerState(req.sessionID);
+    res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({
       msg: error.message
@@ -361,5 +298,6 @@ module.exports = {
   editDino,
   removeDino,
   userGuess,
-  sessMgmt
+  manageSession
 };
+

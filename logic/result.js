@@ -1,9 +1,7 @@
 const getResult = (userGuessDino, dotd) => {
-  // Create the results matrix by comparing values between objects and assign a square.
+
   let arr = [];
   let html = "";
-
-
 
 
   for (key in dotd) {

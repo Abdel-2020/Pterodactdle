@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser(process.env.SECRET));
 const {sessionMiddleware} = require("./session/sessions");
 // express router
-const dinos = require("./routes/routes");
+const dinos = require("./api/routes/routes");
 
 // DB Connection
 const connectDB = require("./db/connect");
@@ -18,6 +18,9 @@ const connectDB = require("./db/connect");
 app.use(express.json());
 app.use(express.static("./public"));
 app.use(sessionMiddleware);
+
+
+
 
 
 

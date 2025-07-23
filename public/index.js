@@ -5,7 +5,17 @@ const submitBtn = document.getElementById("autocomplete-submit");
 const resultsContainer = document.querySelector(".results-container");
 const timer = document.createElement("h2");
 
+
 let lastGuess = "";
+let listOfDinosaurs = [];
+
+function removeFromArray(elmnt, arr) {
+  if (arr.includes(elmnt)) {
+    arr.filter((elmnt) => {
+      return !arr.includes(elmnt)
+    })
+  }
+}
 
 //Autocomplete
 function autocomplete(inp, arr) {
@@ -51,7 +61,6 @@ function autocomplete(inp, arr) {
         item.addEventListener("click", (e) => {
           //insert the value from the autocomplete field
           inp.value = e.target.getElementsByTagName("input")[0].value;
-
           //close the list
           closeAllLists();
         });
@@ -124,7 +133,7 @@ function autocomplete(inp, arr) {
 
 async function sendGuessToServer(string) {
   if (lastGuess == string) {
-    console.log("lastGuess = string")
+    console.log("Cannot resubmit the same guess");
   } else {
     await axios
       .post(
@@ -157,8 +166,6 @@ function prependElement(container, html) {
   container.prepend(...html.getElementsByTagName('div'));
 }
 
-
-
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
   const appSubtitle = document.getElementById("app-subtitle");
@@ -181,7 +188,6 @@ function endGame(attemptCount, nextRound) {
   appSubtitle.append(timer);
 }
 
-
 function parseTime(timeInMs) {
   const totalSeconds = Math.floor(timeInMs / 1000);
   const hours = Math.floor(totalSeconds / 3600);
@@ -190,39 +196,54 @@ function parseTime(timeInMs) {
   timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
 }
 
+
 window.addEventListener("DOMContentLoaded", async () => {
 
-  await axios
-    .get("api/v1/dinos/", {
+
+  function getListOfDinos() {
+    return axios.get("api/v1/dinos/", {
+      withCredentials: true
+    });
+  }
+
+
+  function getSessionData() {
+    return axios.get("api/v1/dinos/session/", {
       withCredentials: true
     })
-    .then((res) => {
-      let dinosaurList = res.data;
-      console.log(dinosaurList.data)
-      autocomplete(document.getElementById("autocomplete-input"), dinosaurList.data)
+  }
+
+  const [list, session] = await Promise.all([getListOfDinos(), getSessionData()]);
+
+
+  if (session.data.data.guesses.length == 0) {
+    listOfDinosaurs = list.data.data;
+  } else {
+    listOfDinosaurs = list.data.data.filter((elmnt) => {
+      return !session.data.data.guesses.includes(elmnt)
     })
 
-  await axios
-    .get("api/v1/dinos/session", {
-      withCredentials: true
-    })
-    .then((res) => {
-      for (let i = 0; i < res.data.rows.length; i++) {
-        prependElement(resultsContainer, parseResponse(res.data.rows[i]));
-      }
-      if (res.data.endGame) {
-        endGame(res.data.attempts, res.data.nextRound);
-      }
+  }
 
-    })
-    .catch((error) => {
-      return error.message;
-    })
+  autocomplete(input, listOfDinosaurs);
+
+
+  if (session.data.data.rows.length > 0) {
+    for (let i = 0; i < session.data.data.rows.length; i++) {
+      prependElement(resultsContainer, parseResponse(session.data.data.rows[i]));
+    }
+  }
+
+
+
+  if (session.data.data.endGame) {
+    endGame(session.data.data.attempts, session.data.data.nextRound);
+  }
+
+
+
 });
 
-
-//Trigger sendToServer if user hits enter or submits the form.
-//Remove whatever the user guessed from the dinosaur array.
 userGuessForm.addEventListener("keydown", (e) => {
 
   if (e.code == "Enter") {
