@@ -1,22 +1,7 @@
-const Dino = require("../../models/dinos")
-const PlayerState = require("../../models/playerState")
+const Dino = require("../../models/dinos");
 const cron = require("node-cron");
-const {timeLeft} = require("../../logic/countdown")
 const services = require("../../services/services");
 const sessionServices = require("../../services/sessionService");
-const { json } = require("express");
-
-
-/*
- * DB Management/API Calls
- *  Create Many
- *  Create One
- *  Read All
- *  Read One
- *  Read One Random
- *  Update One
- *  Delete One
- */
 
 // Create Many
 const populateDB = async (req, res) => {
@@ -34,7 +19,6 @@ const populateDB = async (req, res) => {
     });
   }
 };
-
 
 // Create One
 const createDino = async (req, res) => {
@@ -171,17 +155,8 @@ const removeDino = async (req, res) => {
 };
 
 
-/*
- * Guessing logic
- *  randomDoc{} - Pulls random document from DB and stores it in dotd. Cron Job runs once a day.
- *  userGuess{} - Uses the clients input to retrieve a dinosaur from the DB and stores it in userGuessDino
- *  result{}    - Compare both objects and return an answer object (see below)
- *
- * */
 
 let dotd = null;
-let userGuessDino = null;
-
 
 // Read One Random
 const randomDoc = async () => {
@@ -199,41 +174,35 @@ const randomDoc = async () => {
       }, // OMITS THE ANNOYING _id and __v fields
     ]);
 
-  
-    dotd = {
-      dino: randomDino[0],
-    };
+      dotd = randomDino[0],
+   
+
+    console.log(dotd);
     return dotd;
 
   } catch (error) {
-    return error.message;
+    console.log(error.message);
 
   }
 };
 
 
 const userGuess = async (req, res) => {
-  try {
-    userGuessDino = await Dino.findOne(req.body, {
-      _id: 0,
-      __v: 0
-    });
-   
-  
-    const answer= await  services.handleGuess(userGuessDino,dotd.dino);
+  console.log("req.body is: ")
+  console.log(req.body);
 
- 
-    let playerState = await sessionServices.storePlayerState(
-      req.sessionID, 
-      answer.correct, 
-      answer.html, 
-      userGuessDino.name);
+  try {
+    let userGuessDino= await Dino.findOne(req.body, {_id: 0, __v: 0 });
+    console.log("user guess dino is:")
+    console.log(userGuessDino)
+    const answer = await  services.handleGuess(userGuessDino,dotd, req.sessionID);
     
+   
   return res.status(200).json({
+      endGame: answer.correct,
       html: answer.html,
-      answer: answer.correct,
-      attempts: playerState.numberOfAttempts,
-      nextRound: await services.getTime()
+      attempts: answer.attempts,
+      nextRound: answer.nextRound
     });
 
   } catch (error) {
@@ -254,26 +223,16 @@ const userGuess = async (req, res) => {
  */
 
 randomDoc();
-
+sessionServices.resetPlayerState();
 cron.schedule("0 0 * * *",  async () => {
   try {
-    await services.resetSession();
+    await sessionServices.resetPlayerState();
     await randomDoc();
   } catch (error) {
     return error.message;
   }
 
 });
-
-
-/*
- * Sessions Management
- * 
- *  
- * 
- *
- * */
-
 
 
 const manageSession = async (req, res) => {
@@ -286,7 +245,6 @@ const manageSession = async (req, res) => {
     });
   }
 }
-
 
 
 // Export to Routes

@@ -18,11 +18,11 @@ const PlayerStateSchema = new mongoose.Schema({
     },
 
     rows: {
-        type:[], default: []
+        type:[[String]], default: []
     },
 
      guesses:{
-    type:[], default: []
+    type:[String], default: []
     }
     
 })

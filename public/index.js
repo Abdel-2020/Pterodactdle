@@ -61,6 +61,7 @@ function autocomplete(inp, arr) {
         item.addEventListener("click", (e) => {
           //insert the value from the autocomplete field
           inp.value = e.target.getElementsByTagName("input")[0].value;
+
           //close the list
           closeAllLists();
         });
@@ -144,8 +145,10 @@ async function sendGuessToServer(string) {
         },
       )
       .then((res) => {
+        console.log(`sendGuessToServer Response: \n`)
+        console.log(res.data)
         prependElement(resultsContainer, parseResponse(res.data.html));
-        if (res.data.answer) {
+        if (res.data.endGame) {
           endGame(res.data.attempts, res.data.nextRound);
         }
       })
@@ -197,15 +200,14 @@ function parseTime(timeInMs) {
 }
 
 
-window.addEventListener("DOMContentLoaded", async () => {
 
+window.addEventListener("DOMContentLoaded", async () => {
 
   function getListOfDinos() {
     return axios.get("api/v1/dinos/", {
       withCredentials: true
     });
   }
-
 
   function getSessionData() {
     return axios.get("api/v1/dinos/session/", {
@@ -214,7 +216,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   const [list, session] = await Promise.all([getListOfDinos(), getSessionData()]);
-
+  console.log(list.data)
+  console.log(session)
 
   if (session.data.data.guesses.length == 0) {
     listOfDinosaurs = list.data.data;
@@ -236,7 +239,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 
 
-  if (session.data.data.endGame) {
+  if (session.data.data.correct) {
     endGame(session.data.data.attempts, session.data.data.nextRound);
   }
 
@@ -259,6 +262,7 @@ userGuessForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (input.value) {
     sendGuessToServer(input.value);
+      input.value = "";
   }
-  input.value = "";
+
 });

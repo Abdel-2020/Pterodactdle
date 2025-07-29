@@ -3,7 +3,7 @@ const {timeLeft} = require("../logic/countdown");
 
 
 
-exports.resetSession = async  () => {
+exports.resetPlayerState = async  () => {
   try {
     await PlayerState.updateMany({}, {
       numberOfAttempts: 0,
@@ -18,58 +18,70 @@ exports.resetSession = async  () => {
 
 }
 
-
-exports.storePlayerState = async (playerSessionID, endGame, rows, guesses) =>  {
+exports.storePlayerState = async (playerSessionID, correct, html, guess) =>  {
   try {
-    return await PlayerState.findOneAndUpdate({
+    const playerState =  await PlayerState.findOneAndUpdate({
       playerSessionID,
     }, {
       $setOnInsert: {
         playerSessionID,
       },
       $set: {
-        endGame: endGame,
+        endGame: correct,
         
       },
       $inc: {
         numberOfAttempts: 1
       },
       $push: {
-        rows: rows,
-        guesses: guesses
+        rows: html,
+        guesses: guess
       }
     }, {
       upsert: true,
       new: true
     });
+
+    return {
+      endGame: playerState.endGame,
+      attempts: playerState.numberOfAttempts,
+      rows: playerState.rows,
+      guesses:  playerState.guesses
+    };
+
   } catch (error) {
+    console.log(` error at storePlayerState: ${error}`)
     return res.status(500).json(error.message)
   };
 }
 
-
 exports.getPlayerState = async(sessionId) => {
-  let playerState = await PlayerState.findOne({
+  try {
+      let playerState = await PlayerState.findOne({
         playerSessionID: sessionId
       });
     
     if(!playerState){
+      console.log("No session found, creating one now....")
           playerState = await PlayerState.create({
           playerSessionID: sessionId,
-          endGame:false,
-          numberOfAttempts:0,
-          rows:[],
-          guesses:[]
         })
         playerState = playerState.toJSON();
+            console.log("Created Session: ")
+           console.log(playerState);
+         console.log("________________________")
+
     }
-  
- 
+
   return {
-     endGame: playerState.endGame ,
+     correct: playerState.endGame ,
      attempts: playerState.numberOfAttempts ,
      rows: playerState.rows ,
      guesses: playerState.guesses,
      nextRound: timeLeft()
   }  
+  } catch (error) {
+    console.log(` error at getPlayerState: ${error}`)
+  }
+
 }

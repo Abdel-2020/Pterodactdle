@@ -1,9 +1,6 @@
 const getResult = (userGuessDino, dotd) => {
 
   let arr = [];
-  let html = "";
-
-
   for (key in dotd) {
     if (dotd.hasOwnProperty(key)) {
       if (userGuessDino[key] == dotd[key]) {
@@ -24,11 +21,15 @@ const getResult = (userGuessDino, dotd) => {
       return arr.every(isGreen);
     }
   }
-  
+
+
   //return object
+
+  console.log(`userGuessDino.name type: ${typeof(userGuessDino.name)}`)
   return {
     correct: isCorrect(arr),
     html: arr,
+    guess: userGuessDino.name
   };
 
 }
