@@ -1,8 +1,8 @@
 const Dino = require("../../models/dinos");
 const cron = require("node-cron");
-const services = require("../../services/services");
+const guessService = require("../../services/guessService");
 const sessionServices = require("../../services/sessionService");
-
+const statService = require("../../services/statsService")
 // Create Many
 const populateDB = async (req, res) => {
   const data = req.body;
@@ -49,6 +49,7 @@ const getAllDinos = async (req, res) => {
       __v: 0,
     }, ).lean(); // Second object passed to this function turns the response from a mongoose object to JSON. 
 
+    await  statService.countAllCorrectGuesses();
     const data= [];
     for(let i = 0; i < dinosaurList.length; i++){
       data[i] = dinosaurList[i].name;
@@ -195,7 +196,7 @@ const userGuess = async (req, res) => {
     let userGuessDino= await Dino.findOne(req.body, {_id: 0, __v: 0 });
     console.log("user guess dino is:")
     console.log(userGuessDino)
-    const answer = await  services.handleGuess(userGuessDino,dotd, req.sessionID);
+    const answer = await  guessService.handleGuess(userGuessDino,dotd, req.sessionID);
     
    
   return res.status(200).json({

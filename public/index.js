@@ -243,8 +243,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     endGame(session.data.data.attempts, session.data.data.nextRound);
   }
 
-
-
 });
 
 userGuessForm.addEventListener("keydown", (e) => {
