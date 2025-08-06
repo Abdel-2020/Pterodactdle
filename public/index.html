@@ -20,14 +20,20 @@
   <main>
     <section class="app-body">
       <h2 id="app-subtitle">Guess today's dinosaur!</h2>
-      <form id="userGuessForm" autocomplete="off">
-        <div class="autocomplete">
-          <div id="error message"></div>
-          <input id="autocomplete-input" type="text" name="userGuess" placeholder="Guess a Dinosaur!" />
-        </div>
-        <input id="autocomplete-submit" type="submit"  />
+
+
+      <form id="form" class ="form" autocomplete="off">
+        <div class="form-control"> 
+        <input id="input" type="text" name="userGuess" placeholder="Guess a Dinosaur!" />
+        <small>Enter a valid dinosaur!</small>
+        <button id="submit" type="submit" >submit</button> 
+      </div>
       </form>
     </section>
+
+
+
+
     <section class="results-container-header">
       <h3>Name</h3>
       <h3>Period</h3>

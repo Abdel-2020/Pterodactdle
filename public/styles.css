@@ -10,6 +10,10 @@
    box-sizing: border-box;
  }
 
+ body{
+  font-family:'lato';
+ }
+
  .red-square {
    background-color: red;
    border: 3px solid darkred;
@@ -28,66 +32,85 @@
  }
 
  /****************Autocomplete*************************/
- .autocomplete {
+ .form{
    position: relative;
    display: inline-block;
  }
 
- input {
-   border: 1px solid transparent;
+ .form-control input {
+   border: 2px solid transparent;
    background-color: #f1f1f1;
    padding: 10px;
-
- }
-
- #autocomplete-input {
-   font-family: 'lato';
+   font-family: inherit;
    color: black;
    filter: drop-shadow(0px 10px 8px #000);
    background-color: #f1f1f1;
-   width: 100%;
+   width: 200px;
  }
 
- #autocomplete-submit {
-   font-family: 'lato';
+ .form-control button {
+   cursor: pointer;
+   border:none;
+   filter: drop-shadow(0px 10px 8px #000);
    font-weight: 600;
    background-color: black;
-   filter: drop-shadow(0px 10px 8px #000);
+   padding: 5px;
+   height:45px;
+   width: 90px;
+   font-family: inherit;
    color: #fff;
-   cursor: pointer;
  }
 
+ .form-control small{
+  visibility: hidden;
+  font-family: inherit;
+  position: absolute;
+  top: 60px;
+  right: 150px;
+ }
+
+ .form-control.error input{
+  border: 3px solid #C80815;
+ }
+
+ .form-control.error small{
+  visibility: visible;
+  color:#C80815;
+ }
+
+
+
+
  .autocomplete-items {
+   width: 200px;
    position: absolute;
-   border: 1px solid #d4d4d4;
-   border-bottom: none;
-   border-top: none;
+   border: none;
    z-index: 99;
    top: 100%;
-   left: 0;
-   right: 0;
-
+   left: 140px;
  }
 
  .autocomplete-items div {
+  width: 100%;
+  color: #ffffff;
    padding: 10px;
    cursor: pointer;
-   background-color: #fff;
-   border-bottom: 1px solid #d4d4d4;
+   background-color: #303030;
+   border: 1px solid #1e1e1e;
+    
 
  }
 
  .autocomplete-items div:hover {
-   background-color: #e9e9e9;
+   background-color: #212121;
  }
 
  .autocomplete-active {
-   background-color: DodgerBlue !important;
-   color: #ffffff;
+   background-color:  #212121 !important;
+   
  }
 
  body {
- 
    display: flex;
    flex-direction: column;
    background-color: var(--darcula-black);
@@ -188,9 +211,7 @@
 
 
 
- .invalid{
-  border: 6px solid red;
- }
+
 
 
  @media only screen and (max-width: 480px) {

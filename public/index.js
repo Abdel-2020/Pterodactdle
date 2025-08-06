@@ -1,6 +1,6 @@
-const userGuessForm = document.getElementById("userGuessForm");
-const input = document.getElementById("autocomplete-input");
-const submitBtn = document.getElementById("autocomplete-submit");
+const userGuessForm = document.getElementById("form");
+const input = document.getElementById("input");
+const submitBtn = document.getElementById("submit");
 
 const resultsContainer = document.querySelector(".results-container");
 const timer = document.createElement("h2");
@@ -173,7 +173,7 @@ function prependElement(container, html) {
 function endGame(attemptCount, nextRound) {
   const appSubtitle = document.getElementById("app-subtitle");
   input.setAttribute("type", "hidden");
-  submitBtn.setAttribute("type", "hidden");
+  submitBtn.style.visibility = 'hidden';
 
 
   if (attemptCount > 1) {
@@ -184,6 +184,9 @@ function endGame(attemptCount, nextRound) {
 
   parseTime(nextRound);
   setInterval(() => {
+    if(nextRound <= 0){
+      location.reload();
+    }
     nextRound -= 1000;
     parseTime(nextRound);
   }, 1000)
