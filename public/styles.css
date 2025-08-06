@@ -33,11 +33,12 @@
 
  /****************Autocomplete*************************/
  .form{
-   position: relative;
+  
    display: inline-block;
  }
 
  .form-control input {
+  position: relative;
    border: 2px solid transparent;
    background-color: #f1f1f1;
    padding: 10px;
@@ -66,7 +67,7 @@
   font-family: inherit;
   position: absolute;
   top: 60px;
-  right: 150px;
+  right: 140px;
  }
 
  .form-control.error input{
@@ -83,15 +84,15 @@
 
  .autocomplete-items {
    width: 200px;
-   position: absolute;
+   position: relative;
    border: none;
    z-index: 99;
-   top: 100%;
-   left: 140px;
+   left: 76px;
+
  }
 
  .autocomplete-items div {
-  width: 100%;
+
   color: #ffffff;
    padding: 10px;
    cursor: pointer;
@@ -130,6 +131,7 @@
  }
 
  main {
+  max-width: 450px;
    margin: 0 auto;
  }
 
