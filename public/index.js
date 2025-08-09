@@ -66,6 +66,8 @@ function autocomplete(inp, arr) {
           closeAllLists();
         });
         list.appendChild(item);
+      }  else {
+        console.log("invalid input")
       }
     }
   });
