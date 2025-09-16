@@ -75,6 +75,7 @@
 
  .instructions-card-content {
    padding: 10px 30px 10px 10px;
+
  }
 
  .instructions-card-content>ol {
@@ -321,7 +322,11 @@
 
  @media only screen and (max-width: 480px) {
    .results-container {
-     overflow-x: auto;
+     overflow-x: scroll;
    }
+
+    .instructions-card-content {
+      overflow-y: scroll;
+    }
 
  }
