@@ -1,3 +1,6 @@
+const instructionsCard = document.getElementById("instructions-card")
+const instructionsCardBtn = document.getElementById("instructions-card-close");
+const helpBtn = document.getElementById("app-body-help");
 const userGuessForm = document.getElementById("form");
 const input = document.getElementById("input");
 const submitBtn = document.getElementById("submit");
@@ -8,6 +11,22 @@ const timer = document.createElement("h2");
 
 let lastGuess = "";
 let listOfDinosaurs = [];
+
+
+
+
+helpBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  instructionsCard.removeAttribute("class", "instructions-card-hide");
+  instructionsCard.setAttribute("class", "instructions-card")
+})
+
+instructionsCardBtn.addEventListener("click", (e) =>{
+  e.preventDefault();
+  instructionsCard.removeAttribute("class", "instructions-card");
+ instructionsCard.setAttribute("class", "instructions-card-hide");
+localStorage.setItem("tutorialDismissed", "true");
+})
 
 function removeFromArray(elmnt, arr) {
   if (arr.includes(elmnt)) {
@@ -173,7 +192,7 @@ function prependElement(container, html) {
 
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
-  const appSubtitle = document.getElementById("app-subtitle");
+  const appSubtitle = document.getElementById("app-body-subtitle");
   input.setAttribute("type", "hidden");
   submitBtn.style.visibility = 'hidden';
 
@@ -207,6 +226,9 @@ function parseTime(timeInMs) {
 
 
 window.addEventListener("DOMContentLoaded", async () => {
+     if (localStorage.getItem("tutorialDismissed") === "true") {
+    instructionsCard.style.display = "none";
+  }
 
   function getListOfDinos() {
     return axios.get("api/v1/dinos/", {
@@ -269,3 +291,29 @@ userGuessForm.addEventListener("submit", (e) => {
   }
 
 });
+
+
+  let getStats = async () => {
+   axios.get('/api/v1/dinos/stats', {
+       responseType:'stream', 
+       headers: {
+           'Accept': 'text/event-stream',}
+   })
+    .then(res => {
+        const stream = res.data;
+        console.log(stream)
+    })
+    .catch(e => {
+        console.error('got an error', e);
+    })
+     }
+
+getStats();
+
+
+
+
+
+
+
+
