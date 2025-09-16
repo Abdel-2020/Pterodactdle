@@ -1,5 +1,6 @@
 const instructionsCard = document.getElementById("instructions-card")
 const instructionsCardBtn = document.getElementById("instructions-card-close");
+
 const helpBtn = document.getElementById("app-body-help");
 const userGuessForm = document.getElementById("form");
 const input = document.getElementById("input");
@@ -12,21 +13,25 @@ const timer = document.createElement("h2");
 let lastGuess = "";
 let listOfDinosaurs = [];
 
+helpBtn.addEventListener("click", () => {
+ instructionsCard.style.display = "flex";
+});
 
-
-
-helpBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  instructionsCard.removeAttribute("class", "instructions-card-hide");
-  instructionsCard.setAttribute("class", "instructions-card")
-})
-
-instructionsCardBtn.addEventListener("click", (e) =>{
-  e.preventDefault();
-  instructionsCard.removeAttribute("class", "instructions-card");
- instructionsCard.setAttribute("class", "instructions-card-hide");
+instructionsCardBtn.addEventListener("click", () =>{
 localStorage.setItem("tutorialDismissed", "true");
+instructionsCard.style.display = "none";
+});
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("tutorialDismissed") === "true") {
+    instructionsCard.style.display = "none"; 
+   } else {
+   instructionsCard.style.display = "flex"; 
+  }
 })
+
+
 
 function removeFromArray(elmnt, arr) {
   if (arr.includes(elmnt)) {
@@ -226,9 +231,7 @@ function parseTime(timeInMs) {
 
 
 window.addEventListener("DOMContentLoaded", async () => {
-     if (localStorage.getItem("tutorialDismissed") === "true") {
-    instructionsCard.style.display = "none";
-  }
+
 
   function getListOfDinos() {
     return axios.get("api/v1/dinos/", {
