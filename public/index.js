@@ -312,8 +312,16 @@ userGuessForm.addEventListener("submit", (e) => {
 
 
 
+
+
 const statsSection = document.getElementById("stats-section");
 const statsText = document.createElement("p");
+
+statsText.textContent = "Loading stats...";
+statsSection.appendChild(statsText);
+
+
+
 
 let eventSource = new EventSource('/api/v1/dinos/stats');
 
