@@ -33,10 +33,10 @@
 
 <body>
 
-    <div id="instructions-card" class="instructions-card">
-    <i id="instructions-card-close"class="instructions-card-close fa-solid fa-xmark"></i>
-    <div class="instructions-card-content">
-      <h1 class="instuctions-card-header">How To Play</h1>
+  <div id="instructions-card" class="card" style="display: none">
+    <i id="instructions-card-close" class="card-close fa-solid fa-xmark"></i>
+    <div class="card-content">
+      <h1 class="card-header">How To Play</h1>
       <p>A Dinosaur is picked every 24hrs at midnight (UTC: 00:00)</p>
       <p>The aim is to guess today's Dinosaur. Use the clues given by the tiles in order to guess the correct
         answer!</p>
@@ -56,26 +56,62 @@
   </div>
 
 
-<div class="app-head">
-  <h1 class="app-title"><a href="#">Pterodactdle</a></h1>
-    <i id="app-body-help" class="app-body-help  fa-solid fa-circle-info"></i>
-</div>
+ <div id="contact-us-card" class="card" style="display:none">
+   <i id="contact-us-card-close" class="card-close fa-solid fa-xmark"></i>
+   <div class="card-content">
+     <h1 class="card-header">Contact Us</h1>
+     <p>We're always looking to improve the experience of our app. If there are anyways you think we can improve please let us know!</p>
+     <form class="contact-form">
+       <div class="form-control">
 
-    
+         <label for="contact-form-name" class="contact-form-label">Full Name:</label>
+         <input id="contact-form-name" class="contact-form-input" type="text" name="contact-form-name"
+           placeholder="Joe Bloggs" required>
+
+         <label for="contact-form-email" class="contact-form-label">Email:</label>
+         <input id="contact-form-email" class="contact-form-input" type="email" name="contact-form-email"
+           placeholder="myemail@example.com" required>
+
+
+         <label for="contact-form-subject">Subject:</label>
+         <textarea id="contact-form-subject" class="contact-form-subject" placeholder="Subject line" required
+           rows="1"></textarea>
+
+         <label for="contact-form-message">Message:</label>
+         <textarea id="contact-form-message" class="contact-form-message" placeholder="We'd love to hear from you!"
+           required></textarea>
+
+         <button id="contact-form-btn" class="contact-form-btn" type="submit">send</button>
+       </div>
+     </form>
+   </div>
+ </div>
+
+
+
+
+  <div class="app-head">
+    <h1 class="app-title"><a href="#">Pterodactdle</a></h1>
+    <i id="app-body-help" class="app-body-help  fa-solid fa-circle-info"></i>
+  </div>
+
+
   <main>
     <section class="app-body">
-    
       <h2 id="app-body-subtitle" class="app-body-subtitle">Guess today's dinosaur!</h2>
-      <form id="form" class="form" autocomplete="off">
+      
+      <form id="user-guess-form" autocomplete="off">
         <div class="form-control">
-          <input id="input" list="dinosaur-names" type="text" name="user-guess" placeholder="Guess a Dinosaur!" />
-          <button id="submit" type="submit"><i class="form-btn-icon fa-solid fa-paper-plane"></i></button>
+          <input id="user-guess-input" class="user-guess-input"  type="text" name="user-guess"
+            placeholder="Guess a Dinosaur!" required/>
+          <button id="user-guess-form-btn" class="user-guess-form-btn" type="submit">
+            <i class="form-btn-icon fa-solid fa-paper-plane"></i></button>
         </div>
-  
-    
       </form>
     </section>
 
+    <section id="stats-section" class="stats-section">
+    </section>
 
     <section class="results-container-header">
       <h3>Name</h3>
@@ -91,16 +127,15 @@
   </main>
 
 
-
-
-
   <footer>
     <div class="socials">
       <h2 class="socials-header">Reach out!</h2>
       <ul class="socials-list">
-        <li class="socials-list-item"><a target=”_blank” href="https://github.com/Abdel-2020/" class=""><i class="fa-brands fa-github"></i></li></a>
-        <li class="socials-list-item"><a target=”_blank” href="https://www.linkedin.com/in/abdel-allali-dev/" class=""><i class="fa-brands fa-linkedin"></i></li></a>
-        <li class="socials-list-item"><a href="" class=""><i class="fa-brands fa-x-twitter"></i></li></a>
+        <li class="socials-list-item"><a target=”_blank” href="https://github.com/Abdel-2020/" class=""><i
+              class="fa-brands fa-github"></i></li></a>
+        <li class="socials-list-item"><a target=”_blank” href="https://www.linkedin.com/in/abdel-allali-dev/"
+            class=""><i class="fa-brands fa-linkedin"></i></li></a>
+        <li class="socials-list-item"><i  id="socials-contact-btn" class="fa-solid fa-envelope"></i></li>
       </ul>
       <span class="tips"><a target="_blank" href="https://ko-fi.com/P5P71JFGQ4" class=""><img class="kofi-tip-image"
             src="images/support_me_on_kofi_dark.png" alt=""></a></span>

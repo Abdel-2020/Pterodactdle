@@ -2,9 +2,12 @@ const instructionsCard = document.getElementById("instructions-card")
 const instructionsCardBtn = document.getElementById("instructions-card-close");
 
 const helpBtn = document.getElementById("app-body-help");
-const userGuessForm = document.getElementById("form");
-const input = document.getElementById("input");
-const submitBtn = document.getElementById("submit");
+const userGuessForm = document.getElementById("user-guess-form");
+const input = document.getElementById("user-guess-input");
+const submitBtn = document.getElementById("user-guess-form-btn");
+
+const contactUsCard = document.getElementById("contact-us-card")
+const contactUsBtn = document.getElementById("socials-contact-btn");
 
 const resultsContainer = document.querySelector(".results-container");
 const timer = document.createElement("h2");
@@ -13,14 +16,26 @@ const timer = document.createElement("h2");
 let lastGuess = "";
 let listOfDinosaurs = [];
 
+
+document.addEventListener("click", (e) => {
+  if(e.target.classList.contains("card-close")){
+    const card = e.target.closest(".card");
+    console.log(`card is ` )
+    console.log(card)
+    if(card){
+      card.style.display="none";
+    }
+  }
+})
+
+contactUsBtn.addEventListener("click", () => {
+contactUsCard.style.display = "flex";
+})
+
 helpBtn.addEventListener("click", () => {
  instructionsCard.style.display = "flex";
 });
 
-instructionsCardBtn.addEventListener("click", () =>{
-localStorage.setItem("tutorialDismissed", "true");
-instructionsCard.style.display = "none";
-});
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -296,22 +311,20 @@ userGuessForm.addEventListener("submit", (e) => {
 });
 
 
-  let getStats = async () => {
-   axios.get('/api/v1/dinos/stats', {
-       responseType:'stream', 
-       headers: {
-           'Accept': 'text/event-stream',}
-   })
-    .then(res => {
-        const stream = res.data;
-        console.log(stream)
-    })
-    .catch(e => {
-        console.error('got an error', e);
-    })
-     }
 
-getStats();
+const statsSection = document.getElementById("stats-section");
+const statsText = document.createElement("p");
+
+let eventSource = new EventSource('/api/v1/dinos/stats');
+
+eventSource.addEventListener("daily correct guesses", (e) => {
+statsText.textContent =  e.data + ` people have guessed correctly today!` ;
+});
+
+statsSection.appendChild(statsText);
+
+
+
 
 
 

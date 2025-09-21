@@ -1,10 +1,11 @@
 const PlayerState = require("../models/playerState")
 
-exports.countAllCorrectGuesses = async() =>{
-    try {
-        let test =  await PlayerState.countDocuments({endGame:true})
-        console.log(test);
+exports.getDailyCorrect = async () => {
+    try{
+        let count =  await PlayerState.countDocuments({"endGame":true});
+        return count;
     } catch (error) {
-        return error;
+        console.log(error);
+        return null;
     }
 }
