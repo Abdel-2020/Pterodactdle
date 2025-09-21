@@ -261,13 +261,14 @@ const getStats = async (req, res) => {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-
+        
+        let stat = await statsService.getDailyCorrect();
         res.write(`event: daily correct guesses\n`);
         res.write(`data: ${stat}\n\n`);
 
         //initial message
         const interval = setInterval(async () => {
-            let stat = await statsService.getDailyCorrect();
+
 
             res.write(`event: daily correct guesses\n`)
             res.write(`data: ${stat} \n\n`);
