@@ -265,11 +265,13 @@ const getStats = async (req, res) => {
         //initial connection
         res.write("event: init\n");
         res.write("data: connected\n\n");
+        res.flush?.() || res.flushHeaders?.();
 
         //Send an initial statistic
         let stat = await statsService.getDailyCorrect();
         res.write(`event: daily correct guesses\n`);
         res.write(`data: ${stat}\n\n`);
+        res.flush?.() || res.flushHeaders?.();
 
         //poll DB and send stats
         const interval = setInterval(async () => {
@@ -277,6 +279,7 @@ const getStats = async (req, res) => {
 
             res.write(`event: daily correct guesses\n`)
             res.write(`data: ${stat} \n\n`);
+            res.flush?.() || res.flushHeaders?.();
         }, 5000);
 
         req.on('close', () => {
@@ -290,11 +293,6 @@ const getStats = async (req, res) => {
             msg: error.message
         })
     };
-
-
-
-
-
 
 }
 
