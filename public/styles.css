@@ -11,7 +11,6 @@
  }
 
  body {
-   font-family: 'lato';
    display: flex;
    flex-direction: column;
    background-color: var(--darcula-black);
@@ -115,6 +114,8 @@
   .app-body-subtitle{
     text-align: center;
  }
+
+
 
  .app-body-help{
   position: relative;

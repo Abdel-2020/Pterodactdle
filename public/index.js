@@ -1,52 +1,40 @@
-const instructionsCard = document.getElementById("instructions-card")
-const instructionsCardBtn = document.getElementById("instructions-card-close");
-
-const helpBtn = document.getElementById("app-body-help");
-const userGuessForm = document.getElementById("user-guess-form");
-const input = document.getElementById("user-guess-input");
-const submitBtn = document.getElementById("user-guess-form-btn");
-
-const contactUsCard = document.getElementById("contact-us-card")
-const contactUsBtn = document.getElementById("socials-contact-btn");
-
-const resultsContainer = document.querySelector(".results-container");
-const timer = document.createElement("h2");
-
-
-let lastGuess = "";
-let listOfDinosaurs = [];
-
+//Cards
 
 document.addEventListener("click", (e) => {
   if(e.target.classList.contains("card-close")){
     const card = e.target.closest(".card");
-    console.log(`card is ` )
-    console.log(card)
     if(card){
       card.style.display="none";
     }
   }
 })
 
+const contactUsCard = document.getElementById("contact-us-card")
+const contactUsBtn = document.getElementById("socials-contact-btn");
+
 contactUsBtn.addEventListener("click", () => {
 contactUsCard.style.display = "flex";
 })
+
+const helpBtn = document.getElementById("app-body-help");
 
 helpBtn.addEventListener("click", () => {
  instructionsCard.style.display = "flex";
 });
 
 
+const instructionsCard = document.getElementById("instructions-card")
+const instructionsCardBtn = document.getElementById("instructions-card-close");
 
 window.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("tutorialDismissed") === "true") {
+   if (localStorage.getItem("tutorialDismissed") === "true") {
     instructionsCard.style.display = "none"; 
    } else {
    instructionsCard.style.display = "flex"; 
   }
 })
 
-
+//Autocomplete
 
 function removeFromArray(elmnt, arr) {
   if (arr.includes(elmnt)) {
@@ -56,7 +44,11 @@ function removeFromArray(elmnt, arr) {
   }
 }
 
-//Autocomplete
+
+const userGuessForm = document.getElementById("user-guess-form");
+const input = document.getElementById("user-guess-input");
+const submitBtn = document.getElementById("user-guess-form-btn");
+
 function autocomplete(inp, arr) {
   //currentFocus will keep track of which item in the list is in focus
   let currentFocus;
@@ -173,6 +165,10 @@ function autocomplete(inp, arr) {
   });
 };
 
+//Guess functionality
+const resultsContainer = document.querySelector(".results-container");
+let lastGuess = "";
+
 async function sendGuessToServer(string) {
   if (lastGuess == string) {
     console.log("Cannot resubmit the same guess");
@@ -210,13 +206,15 @@ function prependElement(container, html) {
   container.prepend(...html.getElementsByTagName('div'));
 }
 
+
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
   const appSubtitle = document.getElementById("app-body-subtitle");
+ 
   input.setAttribute("type", "hidden");
   submitBtn.style.visibility = 'hidden';
-
-
+  
+  
   if (attemptCount > 1) {
     appSubtitle.innerText = `Well Done! It took you ${attemptCount} guesses!\n Next Round is in: `;
   } else {
@@ -233,8 +231,28 @@ function endGame(attemptCount, nextRound) {
   }, 1000)
 
   appSubtitle.append(timer);
+
+  const shareWidget = document.createElement("div");
+  const shareXBtn = document.createElement("a");
+  const shareWidgetText = document.createElement("p");
+  const text =  `I got today's Pterodactdle in ${attemptCount} attempt(s)! #Pterodactdle`;
+  const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+  
+  shareWidget.setAttribute("class","share-widget")
+  shareXBtn.setAttribute("class", "twitter-share-button");
+  shareXBtn.setAttribute("href", url);
+  shareXBtn.setAttribute("data-size", "large");
+
+  
+  shareWidgetText.innerText = "Share your result on X!"
+  shareXBtn.innerText = "Tweet";
+  shareWidget.append(shareWidgetText);
+  shareWidget.append(shareXBtn);
+  appSubtitle.append(shareWidget);
+   twttr.widgets.load();
 }
 
+const timer = document.createElement("h2");
 function parseTime(timeInMs) {
   const totalSeconds = Math.floor(timeInMs / 1000);
   const hours = Math.floor(totalSeconds / 3600);
@@ -242,6 +260,8 @@ function parseTime(timeInMs) {
   const seconds = Math.floor(totalSeconds % 60);
   timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
 }
+
+
 
 
 
