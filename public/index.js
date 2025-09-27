@@ -220,6 +220,11 @@ function parseTime(timeInMs) {
 
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
+
+  
+
+
+
   const appSubtitle = document.getElementById("app-body-subtitle");
 
   input.setAttribute("type", "hidden");
@@ -231,6 +236,40 @@ function endGame(attemptCount, nextRound) {
   } else {
     appSubtitle.innerText = `Well Done! It took you ${attemptCount} guess!\n Next Round is in: `;
   }
+
+  const defaults = {
+  spread: 360,
+  ticks: 100,
+  gravity: 0,
+  decay: 0.94,
+  startVelocity: 30,
+};
+
+function shoot() {
+  confetti({
+    ...defaults,
+    particleCount: 30,
+    scalar: 1.2,
+    shapes: ["circle", "square"],
+    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  });
+
+  confetti({
+    ...defaults,
+    particleCount: 20,
+    scalar: 2,
+    shapes: ["emoji"],
+    shapeOptions: {
+      emoji: {
+        value: ["🦖", "🦕"],
+      },
+    },
+  });
+}
+
+setTimeout(shoot, 0);
+setTimeout(shoot, 100);
+setTimeout(shoot, 200);
 
   parseTime(nextRound);
 

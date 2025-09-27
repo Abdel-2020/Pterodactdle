@@ -51,6 +51,7 @@
    filter: drop-shadow(0px 0px 100px #000);
    font-size: 18px;
    overflow-y: auto;
+ 
  }
 
  .card-close {
@@ -255,15 +256,21 @@
  }
 
  .square {
+
    width: 4em;
    height: 4em;
    margin: 6px 6px;
    border-radius: 8px;
    word-break: break-all;
    text-align: center;
+    transform:rotateY(90deg);
+   animation-name: spawn-square;
+   animation-direction: normal;
+   animation-fill-mode: forwards;
+   animation-duration: 2s;
  }
 
- .square>p {
+  .square>p {
    font-size: 18px;
    text-align: center;
    -webkit-text-stroke: 4px black;
@@ -271,7 +278,47 @@
    position: relative;
    bottom: 9px;
    z-index: 3;
+    transform: rotateY(180deg);
+    animation-name: text;
+     animation-direction: normal;
+   animation-fill-mode: forwards;
+     animation-duration: 2s;
  }
+
+.square:nth-child(1) { animation-delay: 0s; }
+.square:nth-child(2) { animation-delay: 1s; }
+.square:nth-child(3) { animation-delay: 2s; }
+.square:nth-child(4) { animation-delay: 3s; }
+.square:nth-child(5) { animation-delay: 4s; }
+.square:nth-child(6) { animation-delay: 5s; }
+
+  @keyframes spawn-square{
+  0%{
+    opacity: 0;
+  }
+
+  50%{
+    opacity: 100;
+  }
+
+  100%{
+  
+    transform: rotateY(180deg) ;
+  }
+ }
+
+
+ @keyframes text{
+  0%{ 
+    opacity: 0;
+  }
+
+  100%{
+     opacity: 100;
+  }
+
+ }
+
 
  .up-arrow {
    position: absolute;
@@ -292,6 +339,8 @@
    width: 4em;
    height: 4em;
  }
+
+
 
  .socials-header {
    text-align: center;
