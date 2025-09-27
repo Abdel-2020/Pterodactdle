@@ -56,36 +56,43 @@
   </div>
 
 
- <div id="contact-us-card" class="card" style="display:none">
-   <i id="contact-us-card-close" class="card-close fa-solid fa-xmark"></i>
-   <div class="card-content">
-     <h1 class="card-header">Contact Us</h1>
-     <p>We're always looking to improve the experience of our app. If there are anyways you think we can improve please let us know!</p>
-     <form class="contact-form">
-       <div class="form-control">
+  <div id="contact-us-card" class="card" style="display:none">
+    <i id="contact-us-card-close" class="card-close fa-solid fa-xmark"></i>
+    <div class="card-content">
+      <h1 class="card-header">Contact Us</h1>
+      <p>We're always looking to improve the experience of our app. If there are anyways you think we can improve please
+        let us know!</p>
+      <form class="contact-form" action="https://formsubmit.co/ea5d46ed11b38fd07716dc6c02862ef6" method="POST">
+        <!--Honeypot-->
+        <input type="text" name="_honey" style="display:none;">
 
-         <label for="contact-form-name" class="contact-form-label">Full Name:</label>
-         <input id="contact-form-name" class="contact-form-input" type="text" name="contact-form-name"
-           placeholder="Joe Bloggs" required>
+        <!--Disable Captcha-->
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="http://localhost:4000">
 
-         <label for="contact-form-email" class="contact-form-label">Email:</label>
-         <input id="contact-form-email" class="contact-form-input" type="email" name="contact-form-email"
-           placeholder="myemail@example.com" required>
+        <div class="form-control">
+          <label for="contact-form-name" class="contact-form-label">Full Name:</label>
+          <input id="contact-form-name" class="contact-form-input" type="text" name="Full&nbsp;Name"
+            placeholder="Joe Bloggs" required>
+
+          <label for="contact-form-email" class="contact-form-label">Email:</label>
+          <input id="contact-form-email" class="contact-form-input" type="email" name="Email"
+            placeholder="myemail@example.com" required>
 
 
-         <label for="contact-form-subject">Subject:</label>
-         <textarea id="contact-form-subject" class="contact-form-subject" placeholder="Subject line" required
-           rows="1"></textarea>
+          <label for="contact-form-subject">Subject:</label>
+          <textarea id="contact-form-subject" class="contact-form-subject" name="Subject&nbsp;Line"placeholder="Subject line" required
+            rows="1"></textarea>
 
-         <label for="contact-form-message">Message:</label>
-         <textarea id="contact-form-message" class="contact-form-message" placeholder="We'd love to hear from you!"
-           required></textarea>
+          <label for="contact-form-message">Message:</label>
+          <textarea id="contact-form-message" class="contact-form-message" name="Message" placeholder="We'd love to hear from you!"
+            required></textarea>
 
-         <button id="contact-form-btn" class="contact-form-btn" type="submit">send</button>
-       </div>
-     </form>
-   </div>
- </div>
+          <button id="contact-form-btn" class="contact-form-btn" type="submit">send</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 
 
@@ -99,11 +106,11 @@
   <main>
     <section class="app-body">
       <h2 id="app-body-subtitle" class="app-body-subtitle">Guess today's dinosaur!</h2>
-      
+
       <form id="user-guess-form" autocomplete="off">
         <div class="form-control">
-          <input id="user-guess-input" class="user-guess-input"  type="text" name="user-guess"
-            placeholder="Guess a Dinosaur!" required/>
+          <input id="user-guess-input" class="user-guess-input" type="text" name="user-guess"
+            placeholder="Guess a Dinosaur!" required />
           <button id="user-guess-form-btn" class="user-guess-form-btn" type="submit">
             <i class="form-btn-icon fa-solid fa-paper-plane"></i></button>
         </div>
@@ -135,31 +142,32 @@
               class="fa-brands fa-github"></i></li></a>
         <li class="socials-list-item"><a target=”_blank” href="https://www.linkedin.com/in/abdel-allali-dev/"
             class=""><i class="fa-brands fa-linkedin"></i></li></a>
-        <li class="socials-list-item"><i  id="socials-contact-btn" class="fa-solid fa-envelope"></i></li>
+        <li class="socials-list-item"><i id="socials-contact-btn" class="fa-solid fa-envelope"></i></li>
       </ul>
       <span class="tips"><a target="_blank" href="https://ko-fi.com/P5P71JFGQ4" class=""><img class="kofi-tip-image"
             src="images/support_me_on_kofi_dark.png" alt=""></a></span>
     </div>
-
   </footer>
 
   <!--Scripts-->
-  <script>window.twttr = (function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0],
-    t = window.twttr || {};
-  if (d.getElementById(id)) return t;
-  js = d.createElement(s);
-  js.id = id;
-  js.src = "https://platform.twitter.com/widgets.js";
-  fjs.parentNode.insertBefore(js, fjs);
+  <script>
+    window.twttr = (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
 
-  t._e = [];
-  t.ready = function(f) {
-    t._e.push(f);
-  };
+      t._e = [];
+      t.ready = function (f) {
+        t._e.push(f);
+      };
 
-  return t;
-}(document, "script", "twitter-wjs"));</script>
+      return t;
+    }(document, "script", "twitter-wjs"));
+  </script>
   <script src="https://kit.fontawesome.com/d4cc86eec5.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="./index.js"></script>

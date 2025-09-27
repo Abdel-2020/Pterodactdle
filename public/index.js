@@ -1,10 +1,10 @@
 //Cards
 
 document.addEventListener("click", (e) => {
-  if(e.target.classList.contains("card-close")){
+  if (e.target.classList.contains("card-close")) {
     const card = e.target.closest(".card");
-    if(card){
-      card.style.display="none";
+    if (card) {
+      card.style.display = "none";
     }
   }
 })
@@ -13,13 +13,13 @@ const contactUsCard = document.getElementById("contact-us-card")
 const contactUsBtn = document.getElementById("socials-contact-btn");
 
 contactUsBtn.addEventListener("click", () => {
-contactUsCard.style.display = "flex";
+  contactUsCard.style.display = "flex";
 })
 
 const helpBtn = document.getElementById("app-body-help");
 
 helpBtn.addEventListener("click", () => {
- instructionsCard.style.display = "flex";
+  instructionsCard.style.display = "flex";
 });
 
 
@@ -27,14 +27,14 @@ const instructionsCard = document.getElementById("instructions-card")
 const instructionsCardBtn = document.getElementById("instructions-card-close");
 
 window.addEventListener("DOMContentLoaded", () => {
-   if (localStorage.getItem("tutorialDismissed") === "true") {
-    instructionsCard.style.display = "none"; 
-   } else {
-   instructionsCard.style.display = "flex"; 
+  if (localStorage.getItem("tutorialDismissed") === "true") {
+    instructionsCard.style.display = "none";
+  } else {
+    instructionsCard.style.display = "flex";
   }
 })
 
-//Autocomplete
+//User Guess and Autocomplete
 
 function removeFromArray(elmnt, arr) {
   if (arr.includes(elmnt)) {
@@ -97,7 +97,7 @@ function autocomplete(inp, arr) {
           closeAllLists();
         });
         list.appendChild(item);
-      }  else {
+      } else {
         console.log("invalid input")
       }
     }
@@ -207,14 +207,25 @@ function prependElement(container, html) {
 }
 
 
+
+const timer = document.createElement("h2");
+
+function parseTime(timeInMs) {
+  const totalSeconds = Math.floor(timeInMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
+}
+
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
   const appSubtitle = document.getElementById("app-body-subtitle");
- 
+
   input.setAttribute("type", "hidden");
   submitBtn.style.visibility = 'hidden';
-  
-  
+
+
   if (attemptCount > 1) {
     appSubtitle.innerText = `Well Done! It took you ${attemptCount} guesses!\n Next Round is in: `;
   } else {
@@ -222,9 +233,10 @@ function endGame(attemptCount, nextRound) {
   }
 
   parseTime(nextRound);
+
   setInterval(() => {
-    if(nextRound <= 0){
-      location.reload();
+    if (nextRound <= 0) {
+      window.location.reload(true);
     }
     nextRound -= 1000;
     parseTime(nextRound);
@@ -235,35 +247,24 @@ function endGame(attemptCount, nextRound) {
   const shareWidget = document.createElement("div");
   const shareXBtn = document.createElement("a");
   const shareWidgetText = document.createElement("p");
-  const text =  `I got today's Pterodactdle in ${attemptCount} attempt(s)! #Pterodactdle`;
+  const text = `I got today's Pterodactdle in ${attemptCount} attempt(s)! #Pterodactdle`;
   const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
-  
-  shareWidget.setAttribute("class","share-widget")
+
+  shareWidget.setAttribute("class", "share-widget")
   shareXBtn.setAttribute("class", "twitter-share-button");
   shareXBtn.setAttribute("href", url);
   shareXBtn.setAttribute("data-size", "large");
 
-  
+
   shareWidgetText.innerText = "Share your result on X!"
   shareXBtn.innerText = "Tweet";
   shareWidget.append(shareWidgetText);
   shareWidget.append(shareXBtn);
   appSubtitle.append(shareWidget);
-   twttr.widgets.load();
+  twttr.widgets.load();
 }
 
-const timer = document.createElement("h2");
-function parseTime(timeInMs) {
-  const totalSeconds = Math.floor(timeInMs / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = Math.floor(totalSeconds % 60);
-  timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
-}
-
-
-
-
+//Misc On first launch/refresh, Session Management
 
 window.addEventListener("DOMContentLoaded", async () => {
 
@@ -325,39 +326,23 @@ userGuessForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (input.value) {
     sendGuessToServer(input.value);
-      input.value = "";
+    input.value = "";
   }
 
 });
 
 
-
-
-
+//Stats Stream
 const statsSection = document.getElementById("stats-section");
 const statsText = document.createElement("p");
 
 statsText.textContent = "Loading stats...";
 statsSection.appendChild(statsText);
 
-
-
-
 let eventSource = new EventSource('/api/v1/dinos/stats');
 
 eventSource.addEventListener("daily correct guesses", (e) => {
-statsText.textContent =  e.data + ` people have guessed correctly today!` ;
+  statsText.textContent = e.data + ` people have guessed correctly today!`;
 });
 
 statsSection.appendChild(statsText);
-
-
-
-
-
-
-
-
-
-
-

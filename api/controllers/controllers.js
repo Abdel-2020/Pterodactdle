@@ -3,7 +3,8 @@ const cron = require("node-cron");
 const guessService = require("../../services/guessService");
 const sessionServices = require("../../services/sessionService");
 const statsService = require("../../services/statsService");
-const playerState = require("../../models/playerState");
+
+
 
 // Create Many
 const populateDB = async (req, res) => {
@@ -191,6 +192,7 @@ const randomDoc = async () => {
 
 
 const userGuess = async (req, res) => {
+    let sessionID = req.sessionID;
     console.log("req.body is: ")
     console.log(req.body);
 
@@ -201,8 +203,21 @@ const userGuess = async (req, res) => {
         });
         console.log("user guess dino is:")
         console.log(userGuessDino)
-        const answer = await guessService.handleGuess(userGuessDino, dotd, req.sessionID);
+        const answer = await guessService.handleGuess(userGuessDino, dotd, sessionID);
+    
+    if (answer.correct) {
+        res.cookie("id", sessionID, {
+        signed: true,
+        httpOnly: true,
+        sameSite: 'Strict',
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000 //1 Day
+      });
+}
 
+/*
+    
+*/
 
         return res.status(200).json({
             endGame: answer.correct,
@@ -261,18 +276,19 @@ const getStats = async (req, res) => {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-        res.flushHeaders();
+
 
         //initial connection
+        console.log("User connected")
         res.write("event: init\n");
         res.write("data: connected\n\n");
-        res.flush?.() || res.flushHeaders?.();
+
 
         //Send an initial statistic
         let stat = await statsService.getDailyCorrect();
         res.write(`event: daily correct guesses\n`);
         res.write(`data: ${stat}\n\n`);
-        res.flush?.() || res.flushHeaders?.();
+     
 
         //poll DB and send stats
         const interval = setInterval(async () => {
@@ -280,7 +296,7 @@ const getStats = async (req, res) => {
 
             res.write(`event: daily correct guesses\n`)
             res.write(`data: ${stat} \n\n`);
-            res.flush?.() || res.flushHeaders?.();
+       
         }, 5000);
 
         req.on('close', () => {
