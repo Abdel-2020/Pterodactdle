@@ -1,4 +1,39 @@
-//Cards
+const defaults = {
+  spread: 360,
+  ticks: 100,
+  gravity: 0,
+  decay: 0.94,
+  startVelocity: 30,
+};
+
+function shoot() {
+  confetti({
+    ...defaults,
+    particleCount: 30,
+    scalar: 1.2,
+    shapes: ["circle", "square"],
+    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  });
+
+  confetti({
+    ...defaults,
+    particleCount: 20,
+    scalar: 2,
+    shapes: ["emoji"],
+    shapeOptions: {
+      emoji: {
+        value: ["🦖", "🦕"],
+      },
+    },
+  });
+}
+
+
+
+//CARDS
+
+const instructionsCard = document.getElementById("instructions-card")
+const instructionsCardBtn = document.getElementById("instructions-card-close");
 
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("card-close")) {
@@ -23,32 +58,24 @@ helpBtn.addEventListener("click", () => {
 });
 
 
-const instructionsCard = document.getElementById("instructions-card")
-const instructionsCardBtn = document.getElementById("instructions-card-close");
 
-window.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("tutorialDismissed") === "true") {
-    instructionsCard.style.display = "none";
-  } else {
-    instructionsCard.style.display = "flex";
-  }
-})
 
-//User Guess and Autocomplete
 
+//USER GUESS AND AUTOCOMPLETE
+/*
 function removeFromArray(elmnt, arr) {
   if (arr.includes(elmnt)) {
     arr.filter((elmnt) => {
       return !arr.includes(elmnt)
     })
   }
-}
-
+}*/
 
 const userGuessForm = document.getElementById("user-guess-form");
 const input = document.getElementById("user-guess-input");
 const submitBtn = document.getElementById("user-guess-form-btn");
 
+//Autocomplete 
 function autocomplete(inp, arr) {
   //currentFocus will keep track of which item in the list is in focus
   let currentFocus;
@@ -169,66 +196,213 @@ function autocomplete(inp, arr) {
 const resultsContainer = document.querySelector(".results-container");
 let lastGuess = "";
 
+userGuessForm.addEventListener("keydown", (e) => {
+
+  if (e.code == "Enter") {
+    e.preventDefault();
+    if (input.value) {
+      sendGuessToServer(input.value);
+      input.value = "";
+    }
+  }
+});
+
+userGuessForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (input.value) {
+    sendGuessToServer(input.value);
+    input.value = "";
+  }
+
+});
+
+function renderTiles(tiles) {
+
+  const grid = document.querySelector(".results-container");
+
+  const row = document.createElement("div");
+  row.setAttribute("class", "results-container-row");
+
+  tiles.forEach(tile => {
+    const div = document.createElement('div');
+    div.className = `square ${tile.colour}-square ${tile.key}`;
+
+    const content = document.createElement('p');
+    content.className = 'attribute-text';
+    content.innerHTML = tile.value;
+
+    div.appendChild(content);
+
+    if (tile.arrowDirection) {
+      const arrow = document.createElement('img');
+      arrow.className = `${tile.arrowDirection}-arrow`;
+      arrow.src = `./images/arrow-svgrepo-com.svg`;
+      div.appendChild(arrow);
+    }
+    row.appendChild(div);
+    grid.prepend(row);
+
+  })
+}
+
+
+function displayHint(attempts) {
+  const guessCount = 5;
+  const remaining = guessCount - attempts;
+  const message = remaining > 0 ? `Reveal hint after ${remaining} attempt(s)` : `Reveal hint`;
+  console.log(remaining);
+  console.log(message);
+
+  const appBodySub = document.querySelector('.app-body-subtitle');
+  let appHint = document.querySelector('.app-hint');
+
+  if (appHint == null) {
+    const p = document.createElement('p');
+    p.className = 'app-hint';
+    p.textContent = message;
+    appBodySub.appendChild(p);
+  } else {
+    appHint.textContent = message;
+  }
+
+  appHint = document.querySelector('.app-hint');
+  if (remaining <= 0) {
+    appHint.style.cursor = "pointer";
+    appHint.addEventListener('click', async (e) => {
+      await axios
+        .get(`/api/v1/dinos/getHint`)
+        .then((res) => {
+          appHint.textContent = res.data;
+        })
+        .catch((error) => {
+          return error;
+        })
+    })
+  }
+
+
+
+
+  /*
+  const message =  remaining > 0 ? 
+
+  const appBodySub = document.querySelector('.app-body-subtitle');
+  const appHint = document.querySelector('.app-hint');
+
+  //Check if text is already being displayed
+  if(!appHint){
+    const p = document.createElement('p');
+    p.className = 'app-hint';
+    p.textContent = message;
+    appBodySub.appendChild(p);
+  } else if (remaining > 0){
+    appHint.textContent =  message;
+  }else if(remaining<=0){
+    remaining = 0;
+    appHint.textContent =  message;
+    
+  }
+
+  */
+}
+
+
+//SEND GUESS TO SERVER
+
 async function sendGuessToServer(string) {
   if (lastGuess == string) {
     console.log("Cannot resubmit the same guess");
   } else {
+    console.log('Sending Guess....')
     await axios
       .post(
-        "/api/v1/dinos/userGuess", {
+        `/api/v1/dinos/userGuess/${string}`, {
           name: string
         }, {
           withCredentials: true
         },
       )
       .then((res) => {
-        console.log(`sendGuessToServer Response: \n`)
-        console.log(res.data)
-        prependElement(resultsContainer, parseResponse(res.data.html));
-        if (res.data.endGame) {
-          endGame(res.data.attempts, res.data.nextRound);
+        console.log('Received Response....');
+
+        const {
+          answer
+        } = res.data;
+        const {
+          desc
+        } = res.data;
+        /*
+        
+        */
+        displayHint(answer.attempts);
+        /*
+        console.log(answer);
+        console.log(desc);
+        */
+
+        let tiles = answer.result.tiles;
+
+        //Cache in localStorage
+        ((count, tiles, desc) => {
+          let guessNo = JSON.stringify(count);
+          console.log('Storing in local storage....')
+          localStorage.setItem(guessNo, JSON.stringify({
+            row: tiles,
+            desc: desc
+          }));
+        })(answer.attempts, tiles, desc);
+
+        //render the result
+        renderTiles(tiles);
+        //add description labels
+        addLabel(desc);
+
+        //Check if user has guessed correctly...
+        if (answer.result.correct) {
+          endGame(answer.attempts, answer.nextRound);
+          displayStreak(answer.streak);
         }
       })
       .catch((error) => {
+        console.log(error);
         return error.message;
-      });
+      })
   }
   lastGuess = string;
 }
 
-function parseResponse(htmlString) {
-  const parser = new DOMParser();
-  const html = parser.parseFromString(htmlString, "text/html");
-  return html;
-}
 
-function prependElement(container, html) {
-  container.prepend(...html.getElementsByTagName('div'));
-}
+function displayStreak(streak) {
+  const appStreak = document.querySelector('.app-streak');
 
+  if (appStreak) {
+    appStreak.innerText = `Your Streak: ${streak}`;
+    return;
+  }
 
+  const appHead = document.querySelector(".app-head");
+  const p = document.createElement("p");
+  p.classList.add("app-streak");
 
-const timer = document.createElement("h2");
+  p.innerText = `Your Streak: ${streak}`;
+  appHead.append(p);
 
-function parseTime(timeInMs) {
-  const totalSeconds = Math.floor(timeInMs / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = Math.floor(totalSeconds % 60);
-  timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
 }
 
 // Update the html with end game msg
 function endGame(attemptCount, nextRound) {
 
-  
-
-
-
   const appSubtitle = document.getElementById("app-body-subtitle");
 
   input.setAttribute("type", "hidden");
   submitBtn.style.visibility = 'hidden';
+
+
+
+  setTimeout(shoot, 0);
+  setTimeout(shoot, 100);
+  setTimeout(shoot, 200);
+
 
 
   if (attemptCount > 1) {
@@ -237,45 +411,13 @@ function endGame(attemptCount, nextRound) {
     appSubtitle.innerText = `Well Done! It took you ${attemptCount} guess!\n Next Round is in: `;
   }
 
-  const defaults = {
-  spread: 360,
-  ticks: 100,
-  gravity: 0,
-  decay: 0.94,
-  startVelocity: 30,
-};
-
-function shoot() {
-  confetti({
-    ...defaults,
-    particleCount: 30,
-    scalar: 1.2,
-    shapes: ["circle", "square"],
-    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
-  });
-
-  confetti({
-    ...defaults,
-    particleCount: 20,
-    scalar: 2,
-    shapes: ["emoji"],
-    shapeOptions: {
-      emoji: {
-        value: ["🦖", "🦕"],
-      },
-    },
-  });
-}
-
-setTimeout(shoot, 0);
-setTimeout(shoot, 100);
-setTimeout(shoot, 200);
 
   parseTime(nextRound);
 
   setInterval(() => {
     if (nextRound <= 0) {
       window.location.reload(true);
+      localStorage.clear();
     }
     nextRound -= 1000;
     parseTime(nextRound);
@@ -303,10 +445,84 @@ setTimeout(shoot, 200);
   twttr.widgets.load();
 }
 
+
+
+//DISPLAY LABELS
+//listen for clicked tiles 
+(() => {
+  const grid = document.querySelector('.results-container');
+  grid.addEventListener("click", (e) => {
+
+    //grab the clicked tile
+    const tile = e.target.closest('.square');
+    if (!tile) return;
+
+    let tileNodes = tile.childNodes;
+
+    //iterate through tile nodes
+    //Check if the node is active and close it.
+    tileNodes.forEach(node => {
+
+      let list = document.querySelectorAll(".label-container")
+      list.forEach(node => {
+        if (!node.classList.value.includes("hidden")) {
+          node.classList.toggle("hidden");
+        }
+      })
+      if (node.classList.value.includes("label-container")) {
+        node.classList.toggle("hidden");
+      }
+    });
+  })
+  // Handle clicks outside the grid
+  document.addEventListener("click", (e) => {
+    // if the click happened *inside* the grid, ignore it
+    if (e.target.closest('.results-container')) return;
+
+    // otherwise, hide all visible labels
+    document.querySelectorAll(".label-container:not(.hidden)").forEach(label => {
+      label.classList.add("hidden");
+    });
+
+  })
+})();
+
+//add label
+function addLabel(desc) {
+  for (const description in desc) {
+    const tile = document.getElementsByClassName(description);
+
+    const labelContainer = document.createElement('div');
+    const labelContent = document.createElement('div');
+    const label = document.createElement('p');
+
+    labelContainer.classList.add("hidden", "label-container");
+    labelContent.classList.add("label-content");
+    label.classList.add("label-text");
+    label.innerText = desc[description];
+
+    labelContainer.append(labelContent);
+    labelContent.append(label);
+
+    tile[0].appendChild(labelContainer);
+  }
+}
+
+//TIMER
+const timer = document.createElement("h2");
+
+function parseTime(timeInMs) {
+  const totalSeconds = Math.floor(timeInMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  timer.innerHTML = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
+}
+
+
 //Misc On first launch/refresh, Session Management
 
 window.addEventListener("DOMContentLoaded", async () => {
-
 
   function getListOfDinos() {
     return axios.get("api/v1/dinos/", {
@@ -320,58 +536,48 @@ window.addEventListener("DOMContentLoaded", async () => {
     })
   }
 
+
+
   const [list, session] = await Promise.all([getListOfDinos(), getSessionData()]);
-  console.log(list.data)
-  console.log(session)
 
-  if (session.data.data.guesses.length == 0) {
-    listOfDinosaurs = list.data.data;
-  } else {
-    listOfDinosaurs = list.data.data.filter((elmnt) => {
-      return !session.data.data.guesses.includes(elmnt)
-    })
+  const {
+    data
+  } = session;
+  console.log(data);
 
+  if (!data.rows.length) {
+    localStorage.clear()
   }
+
+
+  displayHint(data.session.attempts);
+
+  //Get from local storage.
+  for (let i = 0; i <= localStorage.length; i++) {
+
+    let grid = JSON.parse(localStorage.getItem(i));
+    if (!i && grid == null) continue;
+
+    renderTiles(grid.row);
+    addLabel(grid.desc);
+  }
+
+
+  let streak = data.session.streak;
+
+  displayStreak(streak);
+  const listOfDinosaurs = list.data.data;
+
 
   autocomplete(input, listOfDinosaurs);
 
-
-  if (session.data.data.rows.length > 0) {
-    for (let i = 0; i < session.data.data.rows.length; i++) {
-      prependElement(resultsContainer, parseResponse(session.data.data.rows[i]));
-    }
-  }
-
-
-
-  if (session.data.data.correct) {
-    endGame(session.data.data.attempts, session.data.data.nextRound);
-  }
-
-});
-
-userGuessForm.addEventListener("keydown", (e) => {
-
-  if (e.code == "Enter") {
-    e.preventDefault();
-    if (input.value) {
-      sendGuessToServer(input.value);
-      input.value = "";
-    }
+  if (data.session.end_game) {
+    endGame(data.session.attempts, data.nextRound);
   }
 });
 
-userGuessForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (input.value) {
-    sendGuessToServer(input.value);
-    input.value = "";
-  }
 
-});
-
-
-//Stats Stream
+//STATS EVENT STREAM
 const statsSection = document.getElementById("stats-section");
 const statsText = document.createElement("p");
 
@@ -381,7 +587,12 @@ statsSection.appendChild(statsText);
 let eventSource = new EventSource('/api/v1/dinos/stats');
 
 eventSource.addEventListener("daily correct guesses", (e) => {
-  statsText.textContent = e.data + ` people have guessed correctly today!`;
+  if (e.data == 1) {
+    statsText.textContent = e.data + ` person has guessed correctly today!`;
+  } else {
+    statsText.textContent = e.data + ` people have guessed correctly today!`;
+  }
+
 });
 
 statsSection.appendChild(statsText);

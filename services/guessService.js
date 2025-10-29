@@ -4,59 +4,60 @@ const {
 const {
   timeLeft
 } = require("../logic/countdown");
-const sessionServices = require("../services/sessionService")
+const sessionServices = require("../services/sessionService");
 
 exports.getTime = async () => {
   return timeLeft();
 };
 
-exports.handleGuess = async (userGuess, dotd, sessionID) => {
+exports.handleGuess = async (userGuess, dotd, sessionId) => {
   try {
-    //creates and returns an empty session if none are found.
-    let checkSession = await sessionServices.getPlayerState(sessionID);
-    console.log("checking session: ")
-    console.log(checkSession);
-    console.log("________________________")
-
-    //Return session if session is valid
-    if (checkSession.correct) {
+ console.log("Guess Service - Checking Session: ")
+  const Session =  await sessionServices.getPlayerState(sessionId);
+  const {session} = Session;
+  
+  
+    if (session.end_game) {
       console.log(`EndGame is true!`);
-      console.log( `Returning:`)
-      console.log(checkSession);
+      console.log(`Returning:`)
+      console.log(session);
       console.log("________________________")
 
       return {
-        html: checkSession.rows,
-        correct: checkSession.correct,
-        attempts: checkSession.attempts,
+        session,
         nextRound: timeLeft()
       }
     }
 
-
+    console.log("Evaluating Guess....")
     const result = getResult(userGuess, dotd);
-    console.log("Evaluating Guess: ")
-    console.log(result)
-    console.log("________________________")
+
+    const {tiles} = result;
+  
+    await sessionServices.storeGuess(sessionId, tiles);
+    
+    session.attempts++;
+  
+    if(result.correct){
+      session.streak++;
+    }
 
     //store the result in session!
-    let session = await sessionServices.storePlayerState(sessionID, result.correct, result.html, result.guess);
-    console.log("Storing the session: ")
-    console.log(session)
+
+     await sessionServices.updatePlayerState(sessionId, result.correct, session.attempts, session.streak);
+
+     
+    console.log('returning evaluated guess object.....')
     console.log("________________________")
-
-    console.log("returning to controllers the following info........:")
-    console.log(result.correct, result.html, session.attempts)
-
+    
     return {
-      correct: result.correct,
-      html: result.html,
+      result,
       attempts: session.attempts,
-      nextRound: timeLeft()
+      streak: session.streak,
+      nextRound:  timeLeft()
     }
+
   } catch (error) {
-    console.log(` error at handleGuess: ${error}`)
+    return error;
   }
-
-
 }

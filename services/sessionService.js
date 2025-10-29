@@ -1,16 +1,54 @@
-const PlayerState = require("../models/playerState")
-const { timeLeft } = require("../logic/countdown");
+const {
+    query,
+    pool
+} = require("../db/connect");
+
+const {
+    timeLeft
+} = require("../logic/countdown");
 
 
+exports.storeGuess = async (sessionId, guess) => {
+    console.log('Storing guess.....')
+    const text = 'INSERT INTO guesses (session_id, guess) VALUES($1,$2)';
+    const values = [sessionId, guess];
+    const resp = await query(text, values);
+}
 
-exports.resetPlayerState = async () => {
+exports.getGuess = async (sessionid) => {
     try {
-        await PlayerState.updateMany({}, {
-            numberOfAttempts: 0,
-            endGame: false,
-            rows: [],
-            guesses: []
-        }, {});
+        console.log('Getting all guess objects....');
+        const text = 'SELECT guess FROM guesses WHERE session_id = $1';
+        const values = [sessionid];
+        const resp = await query(text, values);
+        const rows = []
+        resp.rows.forEach(row => {
+
+            rows.push(row.guess);
+        })
+
+
+        return rows;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+
+}
+
+//Migrated to PG
+exports.resetPlayerState = async () => {
+    console.log('Resetting state')
+    try {
+        const text = 'UPDATE player_states SET end_game = $1,attempts = $2 ';
+        const values = [false, 0];
+
+        resp = await query(text, values);
+
+        clearGuesses();
+
+        console.log('Resetting session...')
+        console.log(resp.rows[0]);
 
     } catch (error) {
         return error.message;
@@ -18,70 +56,85 @@ exports.resetPlayerState = async () => {
 
 }
 
-exports.storePlayerState = async (playerSessionID, correct, html, guess) => {
+const clearGuesses = async () => {
     try {
-        const playerState = await PlayerState.findOneAndUpdate({
-            playerSessionID,
-        }, {
-            $setOnInsert: {
-                playerSessionID,
-            },
-            $set: {
-                endGame: correct,
+        const text = 'DELETE FROM guesses * ';
+        resp = await query(text);
+        console.log('Clearing out guesses....');
+    } catch (error) {
+        return error;
+    }
 
-            },
-            $inc: {
-                numberOfAttempts: 1
-            },
-            $push: {
-                rows: html,
-                guesses: guess
-            }
-        }, {
-            upsert: true,
-            new: true
-        });
 
+}
+//Migrated to PG
+exports.updatePlayerState = async (playerSessionID, correct, attempts, streak) => {
+    try {
+        const text = 'UPDATE player_states SET end_game = $2,  attempts = $3, streak = $4 WHERE session_id = $1 RETURNING session_id, end_game, streak, attempts';
+        values = [playerSessionID, correct, attempts, streak];
+
+        const resp = await query(text, values);
+        console.log('Updating session.....')
+        const session = resp.rows[0];
+        console.log(session);
         return {
-            endGame: playerState.endGame,
-            attempts: playerState.numberOfAttempts,
-            rows: playerState.rows,
-            guesses: playerState.guesses
+            session
         };
 
     } catch (error) {
-        console.log(` error at storePlayerState: ${error}`)
+        console.log(` error at updatePlayerState: ${error}`)
         return res.status(500).json(error.message)
     };
 }
 
+//Migrated to PG
 exports.getPlayerState = async (sessionId) => {
     try {
-        let playerState = await PlayerState.findOne({
-            playerSessionID: sessionId
-        });
+        const text = 'SELECT end_game, streak, attempts FROM player_states WHERE session_id = $1';
+        const values = [sessionId];
 
-        if (!playerState) {
-            console.log("No session found, creating one now....")
-            playerState = await PlayerState.create({
-                playerSessionID: sessionId,
-            })
-            playerState = playerState.toJSON();
-            console.log("Created Session: ")
-            console.log(playerState);
-            console.log("________________________")
+        let resp = await query(text, values);
 
+        //Check for a stored session state 
+        if (resp.rowCount == 0) {
+            console.log("No session found, creating one now....");
+            resp = await createPlayerState(sessionId);
         }
 
-        return {
-            correct: playerState.endGame,
-            attempts: playerState.numberOfAttempts,
-            rows: playerState.rows,
-            guesses: playerState.guesses,
-            nextRound: timeLeft()
+        console.log('Session found: ');
+        const session = resp.rows[0];
+        console.log(session);
+
+
+
+        if (session.end_game) {
+            return {
+                session,
+                nextRound: timeLeft()
+            }
+        } else {
+            return {
+                session
+            }
         }
+
+
     } catch (error) {
         console.log(` error at getPlayerState: ${error}`)
+    }
+
+}
+//Migrated to PG
+const createPlayerState = async (sessionId, end_game, streak, guesses, attempts) => {
+    try {
+        const text = 'INSERT INTO player_states(session_id, end_game, streak,  attempts) VALUES($1, $2, $3, $4 ) RETURNING session_id, end_game, streak, attempts';
+        const values = [sessionId, false, 0, 0];
+        console.log('creating player state....')
+        const resp = await query(text, values);
+        return resp;
+
+    } catch (error) {
+        return error.message;
     }
 
 }

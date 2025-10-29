@@ -1,18 +1,22 @@
 require("dotenv").config();
 
 const express = require("express");
-const app = express();
+const http = require('http');
 const port = process.env.PORT || 4000;
+
+const app = express();
+const server = http.createServer(app); //Attach express to raw HTTP server
 
 // Manage Cookies/Sessions
 const cookieParser = require('cookie-parser');
 app.use(cookieParser(process.env.SECRET));
 const {sessionMiddleware} = require("./session/sessions");
+
 // express router
-const dinos = require("./api/routes/routes");
+const router = require("./api/routes/routes");
 
 // DB Connection
-const connectDB = require("./db/connect");
+const  {query} = require("./db/connect");
 
 // Middleware 
 app.use(express.json());
@@ -20,17 +24,10 @@ app.use(express.static("./public"));
 app.use(sessionMiddleware);
 
 
-
-
-
-
-
-
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI);
-
-    app.listen(port, () => {
+    const res = await query('SELECT NOW()');
+    server.listen(port, () => {
       console.log(`Listening on port ${port} ...`);
     });
   } catch (error) {
@@ -40,8 +37,8 @@ const start = async () => {
 
 
 // Routes
-// Any requests to the below paths, will be handled by the router
-app.use("/api/v1/dinos", dinos);
+// Any requests to the below path will be handled by the router
+app.use("/api/v1/dinos", router);
 
 
 start();

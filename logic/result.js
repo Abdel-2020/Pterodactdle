@@ -1,37 +1,37 @@
 const getResult = (userGuessDino, dotd) => {
+  
+  let tiles = [];
 
-  let arr = [];
-  for (key in dotd) {
-    if (dotd.hasOwnProperty(key)) {
-      if (userGuessDino[key] == dotd[key]) {
-        arr.push(`<div class="square green-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
-      } else if (typeof userGuessDino[key] == "number") {
-        userGuessDino[key] < dotd[key] ? (arr.push(`<div class="square amber-square"><img class="up-arrow" src="./images/arrow-svgrepo-com.svg" alt=""><p>${userGuessDino[key]}</p></div>`)) :
-          (arr.push(`<div class="square amber-square"><img class="down-arrow" src="./images/arrow-svgrepo-com.svg" alt=""><p>${userGuessDino[key]}</p></div>`));
-      } else {
-        arr.push(`<div class="square red-square"><p class="attribute-text">${userGuessDino[key]}</p></div>`);
-      }
-    }
+  for(const key in dotd){
+    if(!dotd.hasOwnProperty(key)) continue;
+
+    let colour = "red";
+    let arrowDirection = null;
+
+    //check if attributes match and assign a new colour or arrow where applicable
+    if(userGuessDino[key] === dotd[key]){
+      colour = "green"
+    } else if (typeof userGuessDino[key] === "number"){
+      colour = "amber";
+      arrowDirection =  userGuessDino[key] < dotd[key] ? "up" : "down";
+    } 
+
+    tiles.push({
+      key,
+      value: userGuessDino[key],
+      colour,
+      arrowDirection
+    })
+
   }
 
-  // Check if all values are correct (green-square)
-  function isCorrect(arr) {
-    const isGreen = (elmnt) => elmnt.includes(`green-square`);
-    if (arr) {
-      return arr.every(isGreen);
-    }
-  }
-
-
-  //return object
-
-  console.log(`userGuessDino.name type: ${typeof(userGuessDino.name)}`)
+  const isCorrect = tiles.every(tile => tile.colour === "green");
+  
   return {
-    correct: isCorrect(arr),
-    html: arr,
+    correct: isCorrect,
+    tiles,
     guess: userGuessDino.name
   };
-
 }
 
 
