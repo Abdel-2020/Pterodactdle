@@ -309,10 +309,10 @@
  }
 
  .label-container {
-   position: relative;
+   position: absolute;
    z-index: 100;
    top: -220px;
-   right: 90px;
+   left: -160px;
    height: 150px;
    width: 250px;
    background-color: #f1f1f1;
@@ -451,9 +451,7 @@
 
 
  @media only screen and (max-width: 480px) {
-   .results-container {
-     overflow-x: scroll;
-   }
+   
 
    .instructions-card-content {
      overflow-y: scroll;
